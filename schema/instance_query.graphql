@@ -1,0 +1,5 @@
+extend type Query {
+  instance(
+    id: ID! = ""
+  ): Instance
+}

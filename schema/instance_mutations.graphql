@@ -1,0 +1,4 @@
+extend type Mutation {
+  createInstance(input: CreateInstanceInput!): Instance!
+  updateInstance(input: UpdateInstanceInput!): Instance!
+}

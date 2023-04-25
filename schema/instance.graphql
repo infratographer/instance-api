@@ -1,0 +1,45 @@
+type Instance @key(fields: "id") {
+  id: ID!
+  name: String!
+  tenant: Tenant!
+  location: Location!
+  provider: InstanceProvider!
+  createdAt: Time!
+  updatedAt: Time!
+  deletedAt: Time
+}
+
+extend type Tenant {
+  id: ID! @external
+  instances(page: PageArgs): InstanceConnection!
+}
+
+extend type Location {
+  id: ID! @external
+  instances(page: PageArgs): InstanceConnection!
+}
+
+input CreateInstanceInput {
+  name: String!
+  locationId: String!
+  tenantId: String!
+  providerId: String!
+}
+
+input UpdateInstanceInput {
+  name: String!
+}
+
+type InstanceConnection {
+  edges: [InstanceEdge!]!
+  nodes: [Instance!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type InstanceEdge {
+  # A cursor to use in pagination
+  cursor: String
+  # The item at the end of the edge
+  node: Instance
+}
