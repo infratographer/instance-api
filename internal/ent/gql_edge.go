@@ -31,10 +31,11 @@ func (i *Instance) InstanceProvider(ctx context.Context) (*InstanceProvider, err
 }
 
 func (i *Instance) Metadata(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *InstanceMetadataOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *InstanceMetadataOrder, where *InstanceMetadataWhereInput,
 ) (*InstanceMetadataConnection, error) {
 	opts := []InstanceMetadataPaginateOption{
 		WithInstanceMetadataOrder(orderBy),
+		WithInstanceMetadataFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := i.Edges.totalCount[1][alias]
@@ -59,10 +60,11 @@ func (im *InstanceMetadata) Instance(ctx context.Context) (*Instance, error) {
 }
 
 func (ip *InstanceProvider) Instances(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *InstanceOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *InstanceOrder, where *InstanceWhereInput,
 ) (*InstanceConnection, error) {
 	opts := []InstancePaginateOption{
 		WithInstanceOrder(orderBy),
+		WithInstanceFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := ip.Edges.totalCount[0][alias]

@@ -23,18 +23,18 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []uuid.UUID) ([]ent.Noder
 }
 
 // Instances is the resolver for the instances field.
-func (r *queryResolver) Instances(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceOrder) (*ent.InstanceConnection, error) {
-	return r.client.Instance.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceOrder(orderBy))
+func (r *queryResolver) Instances(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceOrder, where *ent.InstanceWhereInput) (*ent.InstanceConnection, error) {
+	return r.client.Instance.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceOrder(orderBy), ent.WithInstanceFilter(where.Filter))
 }
 
 // InstanceMetadataSlice is the resolver for the instanceMetadataSlice field.
-func (r *queryResolver) InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceMetadataOrder) (*ent.InstanceMetadataConnection, error) {
-	return r.client.InstanceMetadata.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceMetadataOrder(orderBy))
+func (r *queryResolver) InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceMetadataOrder, where *ent.InstanceMetadataWhereInput) (*ent.InstanceMetadataConnection, error) {
+	return r.client.InstanceMetadata.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceMetadataOrder(orderBy), ent.WithInstanceMetadataFilter(where.Filter))
 }
 
 // InstanceProviders is the resolver for the instanceProviders field.
-func (r *queryResolver) InstanceProviders(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceProviderOrder) (*ent.InstanceProviderConnection, error) {
-	return r.client.InstanceProvider.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceProviderOrder(orderBy))
+func (r *queryResolver) InstanceProviders(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceProviderOrder, where *ent.InstanceProviderWhereInput) (*ent.InstanceProviderConnection, error) {
+	return r.client.InstanceProvider.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceProviderOrder(orderBy), ent.WithInstanceProviderFilter(where.Filter))
 }
 
 // Query returns QueryResolver implementation.

@@ -71,7 +71,7 @@ func (i *InstanceQuery) collectField(ctx context.Context, opCtx *graphql.Operati
 				path  = append(path, alias)
 				query = (&InstanceMetadataClient{config: i.config}).Query()
 			)
-			args := newInstanceMetadataPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newInstanceMetadataPaginateArgs(fieldArgs(ctx, new(InstanceMetadataWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -231,6 +231,9 @@ func newInstancePaginateArgs(rv map[string]interface{}) *instancePaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*InstanceWhereInput); ok {
+		args.opts = append(args.opts, WithInstanceFilter(v.Filter))
+	}
 	return args
 }
 
@@ -351,6 +354,9 @@ func newInstanceMetadataPaginateArgs(rv map[string]interface{}) *instancemetadat
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*InstanceMetadataWhereInput); ok {
+		args.opts = append(args.opts, WithInstanceMetadataFilter(v.Filter))
+	}
 	return args
 }
 
@@ -381,7 +387,7 @@ func (ip *InstanceProviderQuery) collectField(ctx context.Context, opCtx *graphq
 				path  = append(path, alias)
 				query = (&InstanceClient{config: ip.config}).Query()
 			)
-			args := newInstancePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newInstancePaginateArgs(fieldArgs(ctx, new(InstanceWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -530,6 +536,9 @@ func newInstanceProviderPaginateArgs(rv map[string]interface{}) *instanceprovide
 				args.opts = append(args.opts, WithInstanceProviderOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*InstanceProviderWhereInput); ok {
+		args.opts = append(args.opts, WithInstanceProviderFilter(v.Filter))
 	}
 	return args
 }
