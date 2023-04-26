@@ -1,4 +1,4 @@
-type Instance @key(fields: "id") {
+type Instance implements Node @key(fields: "id") {
   id: ID!
   name: String!
   tenant: Tenant!
@@ -16,7 +16,16 @@ extend type Tenant {
 
 extend type Location {
   id: ID! @external
-  instances(page: PageArgs): InstanceConnection!
+  instances(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+    """Returns the elements in the list that come before the specified cursor."""
+    before: String
+    """Returns the first _n_ elements from the list."""
+    first: Int
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): InstanceConnection!
 }
 
 input CreateInstanceInput {

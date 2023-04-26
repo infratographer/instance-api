@@ -8,6 +8,11 @@ import (
 	"github.com/nrfta/go-paging"
 )
 
+type Node interface {
+	IsNode()
+	GetID() string
+}
+
 type CreateInstanceInput struct {
 	Name       string `json:"name"`
 	LocationID string `json:"locationId"`
@@ -31,6 +36,9 @@ type Instance struct {
 	DeletedAt *time.Time        `json:"deletedAt,omitempty"`
 }
 
+func (Instance) IsNode()            {}
+func (this Instance) GetID() string { return this.ID }
+
 func (Instance) IsEntity() {}
 
 type InstanceConnection struct {
@@ -53,6 +61,16 @@ type InstanceProvider struct {
 	UpdatedAt time.Time           `json:"updatedAt"`
 	DeletedAt *time.Time          `json:"deletedAt,omitempty"`
 	Instances *InstanceConnection `json:"instances,omitempty"`
+}
+
+type Location struct {
+	ID        string              `json:"id"`
+	Instances *InstanceConnection `json:"instances"`
+}
+
+type Tenant struct {
+	ID        string              `json:"id"`
+	Instances *InstanceConnection `json:"instances"`
 }
 
 type UpdateInstanceInput struct {

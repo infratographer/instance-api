@@ -64,3 +64,11 @@ models:
     model: github.com/nrfta/go-paging.PageArgs
   PageInfo:
     model: github.com/nrfta/go-paging.PageInfo
+  Tenant:
+    fields:
+      instances:
+        resolver: true
+  Location:
+    fields:
+      instances:
+        resolver: true

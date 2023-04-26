@@ -89,7 +89,7 @@ type ComplexityRoot struct {
 
 	Location struct {
 		ID        func(childComplexity int) int
-		Instances func(childComplexity int, page *paging.PageArgs) int
+		Instances func(childComplexity int, after *string, before *string, first *int, last *int) int
 	}
 
 	Mutation struct {
@@ -112,6 +112,7 @@ type ComplexityRoot struct {
 		InstanceProvider   func(childComplexity int, id string) int
 		InstanceProviders  func(childComplexity int) int
 		Instances          func(childComplexity int) int
+		Node               func(childComplexity int, id string) int
 		__resolve__service func(childComplexity int) int
 		__resolve_entities func(childComplexity int, representations []map[string]interface{}) int
 	}
@@ -130,7 +131,7 @@ type EntityResolver interface {
 	FindInstanceByID(ctx context.Context, id string) (*Instance, error)
 }
 type LocationResolver interface {
-	Instances(ctx context.Context, obj *Location, page *paging.PageArgs) (*InstanceConnection, error)
+	Instances(ctx context.Context, obj *Location, after *string, before *string, first *int, last *int) (*InstanceConnection, error)
 }
 type MutationResolver interface {
 	CreateInstance(ctx context.Context, input CreateInstanceInput) (*Instance, error)
@@ -149,6 +150,7 @@ type QueryResolver interface {
 	Instances(ctx context.Context) (*InstanceConnection, error)
 	InstanceProviders(ctx context.Context) ([]*InstanceProvider, error)
 	Instance(ctx context.Context, id string) (*Instance, error)
+	Node(ctx context.Context, id string) (Node, error)
 	InstanceProvider(ctx context.Context, id string) (*InstanceProvider, error)
 }
 type TenantResolver interface {
@@ -346,7 +348,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Location.Instances(childComplexity, args["page"].(*paging.PageArgs)), true
+		return e.complexity.Location.Instances(childComplexity, args["after"].(*string), args["before"].(*string), args["first"].(*int), args["last"].(*int)), true
 
 	case "Mutation.createInstance":
 		if e.complexity.Mutation.CreateInstance == nil {
@@ -468,6 +470,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Instances(childComplexity), true
+
+	case "Query.node":
+		if e.complexity.Query.Node == nil {
+			break
+		}
+
+		args, err := ec.field_Query_node_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Node(childComplexity, args["id"].(string)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -597,7 +611,7 @@ extend type Query {
   instanceProviders: [InstanceProvider]
 }
 `, BuiltIn: false},
-	{Name: "../schema/instance.graphql", Input: `type Instance @key(fields: "id") {
+	{Name: "../schema/instance.graphql", Input: `type Instance implements Node @key(fields: "id") {
   id: ID!
   name: String!
   tenant: Tenant!
@@ -615,7 +629,16 @@ extend type Tenant {
 
 extend type Location {
   id: ID! @external
-  instances(page: PageArgs): InstanceConnection!
+  instances(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: String
+    """Returns the elements in the list that come before the specified cursor."""
+    before: String
+    """Returns the first _n_ elements from the list."""
+    first: Int
+    """Returns the last _n_ elements from the list."""
+    last: Int
+  ): InstanceConnection!
 }
 
 input CreateInstanceInput {
@@ -649,13 +672,18 @@ type InstanceEdge {
 }
 `, BuiltIn: false},
 	{Name: "../schema/instance_query.graphql", Input: `extend type Query {
-  instance(
-    id: ID! = ""
-  ): Instance
+  instance(id: ID! = ""): Instance
 }
 `, BuiltIn: false},
-	{Name: "../schema/paging.graphql", Input: `
-input PageArgs {
+	{Name: "../schema/node.graphql", Input: `interface Node {
+  id: ID!
+}
+
+extend type Query {
+  node(id: ID! = ""): Node!
+}
+`, BuiltIn: false},
+	{Name: "../schema/paging.graphql", Input: `input PageArgs {
   """
   first refers to the limit of items to return
   """
@@ -719,9 +747,7 @@ input UpdateInstanceProviderInput {
 }
 `, BuiltIn: false},
 	{Name: "../schema/provider_query.graphql", Input: `extend type Query {
-  instanceProvider(
-    id: ID! = ""
-  ): InstanceProvider
+  instanceProvider(id: ID! = ""): InstanceProvider
 }
 `, BuiltIn: false},
 	{Name: "../federation/directives.graphql", Input: `
@@ -783,15 +809,42 @@ func (ec *executionContext) field_Entity_findInstanceByID_args(ctx context.Conte
 func (ec *executionContext) field_Location_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *paging.PageArgs
-	if tmp, ok := rawArgs["page"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-		arg0, err = ec.unmarshalOPageArgs2ᚖgithubᚗcomᚋnrftaᚋgoᚑpagingᚐPageArgs(ctx, tmp)
+	var arg0 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["page"] = arg0
+	args["after"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
 	return args, nil
 }
 
@@ -901,6 +954,21 @@ func (ec *executionContext) field_Query_instanceProvider_args(ctx context.Contex
 }
 
 func (ec *executionContext) field_Query_instance_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -2106,7 +2174,7 @@ func (ec *executionContext) _Location_instances(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Location().Instances(rctx, obj, fc.Args["page"].(*paging.PageArgs))
+		return ec.resolvers.Location().Instances(rctx, obj, fc.Args["after"].(*string), fc.Args["before"].(*string), fc.Args["first"].(*int), fc.Args["last"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2828,6 +2896,61 @@ func (ec *executionContext) fieldContext_Query_instance(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_instance_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_node(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Node(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(Node)
+	fc.Result = res
+	return ec.marshalNNode2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋgraphᚐNode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_node_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -5241,6 +5364,22 @@ func (ec *executionContext) unmarshalInputUpdateInstanceProviderInput(ctx contex
 
 // region    ************************** interface.gotpl ***************************
 
+func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj Node) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case Instance:
+		return ec._Instance(ctx, sel, &obj)
+	case *Instance:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Instance(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 func (ec *executionContext) __Entity(ctx context.Context, sel ast.SelectionSet, obj fedruntime.Entity) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
@@ -5314,7 +5453,7 @@ func (ec *executionContext) _Entity(ctx context.Context, sel ast.SelectionSet) g
 	return out
 }
 
-var instanceImplementors = []string{"Instance", "_Entity"}
+var instanceImplementors = []string{"Instance", "Node", "_Entity"}
 
 func (ec *executionContext) _Instance(ctx context.Context, sel ast.SelectionSet, obj *Instance) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, instanceImplementors)
@@ -5825,6 +5964,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_instance(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "node":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_node(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			}
 
@@ -6518,6 +6680,16 @@ func (ec *executionContext) marshalNLocation2ᚖgoᚗinfratographerᚗcomᚋinst
 		return graphql.Null
 	}
 	return ec._Location(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNode2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋgraphᚐNode(ctx context.Context, sel ast.SelectionSet, v Node) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Node(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPageInfo2ᚖgithubᚗcomᚋnrftaᚋgoᚑpagingᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v *paging.PageInfo) graphql.Marshaler {

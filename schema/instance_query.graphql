@@ -1,5 +1,3 @@
 extend type Query {
-  instance(
-    id: ID! = ""
-  ): Instance
+  instance(id: ID! = ""): Instance
 }

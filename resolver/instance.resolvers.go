@@ -11,11 +11,13 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"go.infratographer.com/instance-api/graph"
+	"go.infratographer.com/instance-api/internal/config"
 	"go.infratographer.com/instance-api/internal/models"
 )
 
 // Instances is the resolver for the instances field.
-func (r *locationResolver) Instances(ctx context.Context, obj *graph.Location, page *paging.PageArgs) (*graph.InstanceConnection, error) {
+func (r *locationResolver) Instances(ctx context.Context, obj *graph.Location, after *string, before *string, first *int, last *int) (*graph.InstanceConnection, error) {
+	page := &paging.PageArgs{First: first, After: after}
 	return loadInstances(ctx, page, r.db, models.InstanceWhere.LocationID.EQ(obj.ID))
 }
 
@@ -69,7 +71,7 @@ func addInstanceSliceToConnection(connection *graph.InstanceConnection, instance
 	for i, row := range instances {
 
 		res := &graph.Instance{
-			ID:       row.ID,
+			ID:       config.BuildURN("instance", row.ID),
 			Name:     row.Name,
 			Location: &graph.Location{ID: row.LocationID},
 			Tenant:   &graph.Tenant{ID: row.TenantID},

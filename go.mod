@@ -5,7 +5,6 @@ go 1.20
 require (
 	github.com/99designs/gqlgen v0.17.30
 	github.com/friendsofgo/errors v0.9.2
-	github.com/google/uuid v1.3.0
 	github.com/infratographer/sqlboiler-crdb/v4 v4.0.0-20230221155636-b918efb472b3
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/lib/pq v1.10.8
@@ -43,6 +42,7 @@ require (
 	github.com/gofrs/uuid v4.3.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.14.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.1 // indirect

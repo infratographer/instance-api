@@ -18,16 +18,10 @@ var AppConfig struct {
 	Tracing otelx.Config
 	URN     struct {
 		Namespace string `mapstructure:"namespace"`
-		Types     struct {
-			Instance         string `mapstructure:"instance"`
-			InstanceProvider string `mapstructure:"instance_provider"`
-		} `mapstructure:"types"`
 	}
 }
 
 // MustViperFlags returns the viper config for application specific config
 func MustViperFlags(v *viper.Viper, _ *pflag.FlagSet) {
-	v.SetDefault("urn.namespace", "com.infratographer")
-	v.SetDefault("urn.types.instance", "instance")
-	v.SetDefault("urn.types.instance_provider", "instance-provider")
+	v.SetDefault("urn.namespace", "infratographer")
 }
