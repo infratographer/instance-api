@@ -1,0 +1,7 @@
+# TODO: This file should be removed, it's here as a temporary hack so I can get instances and
+# instance providers directly instead of having to load them through another resource just
+# to make development easier as I'm expirmenting with graphql
+extend type Query {
+  instances: InstanceConnection
+  instanceProviders: [InstanceProvider]
+}
