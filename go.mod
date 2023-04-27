@@ -6,18 +6,20 @@ require (
 	entgo.io/contrib v0.4.4
 	entgo.io/ent v0.12.2
 	github.com/99designs/gqlgen v0.17.30
+	github.com/brianvoe/gofakeit/v6 v6.21.0
+	github.com/gobeam/stringy v0.0.6
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/infratographer/sqlboiler-crdb/v4 v4.0.0-20230221155636-b918efb472b3
+	github.com/jaevor/go-nanoid v1.3.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.7.0
-	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.15.0
 	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/volatiletech/sqlboiler/v4 v4.14.2
-	go.infratographer.com/x v0.0.6
+	go.infratographer.com/x v0.0.7
 	go.uber.org/zap v1.24.0
 )
 
@@ -89,6 +91,7 @@ require (
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/urfave/cli/v2 v2.24.4 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

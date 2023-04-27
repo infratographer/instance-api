@@ -1,4 +1,4 @@
-// Copyright 2022 The Infratographer Authors
+// Copyright 2023 The Infratographer Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,12 +24,13 @@ import (
 var (
 	// InstancesColumns holds the columns for the "instances" table.
 	InstancesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "tenant_id", Type: field.TypeUUID},
-		{Name: "instance_provider_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeString},
+		{Name: "location_id", Type: field.TypeString},
+		{Name: "instance_provider_id", Type: field.TypeString},
 	}
 	// InstancesTable holds the schema information for the "instances" table.
 	InstancesTable = &schema.Table{
@@ -39,7 +40,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "instances_instance_providers_instance_provider",
-				Columns:    []*schema.Column{InstancesColumns[5]},
+				Columns:    []*schema.Column{InstancesColumns[6]},
 				RefColumns: []*schema.Column{InstanceProvidersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -47,12 +48,12 @@ var (
 	}
 	// InstanceMetadataColumns holds the columns for the "instance_metadata" table.
 	InstanceMetadataColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "namespace", Type: field.TypeString, Size: 2147483647},
 		{Name: "data", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "instance_id", Type: field.TypeUUID},
+		{Name: "instance_id", Type: field.TypeString},
 	}
 	// InstanceMetadataTable holds the schema information for the "instance_metadata" table.
 	InstanceMetadataTable = &schema.Table{
@@ -70,7 +71,7 @@ var (
 	}
 	// InstanceProvidersColumns holds the columns for the "instance_providers" table.
 	InstanceProvidersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},

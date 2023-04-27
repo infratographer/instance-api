@@ -1,15 +1,13 @@
 package schema
 
 import (
-	"encoding/json"
-	"time"
-
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
+	"go.infratographer.com/instance-api/xthings/entx"
+	"go.infratographer.com/instance-api/xthings/idx"
 )
 
 // InstanceMetadata holds the schema definition for the InstanceMetadata entity.
@@ -17,32 +15,19 @@ type InstanceMetadata struct {
 	ent.Schema
 }
 
+func (InstanceMetadata) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		idx.PrimaryKeyMixin(idPrefixInstanceMetadata),
+		entx.NamespacedDataMixin{},
+		entx.TimestampsMixin{},
+	}
+}
+
 // Fields of the InstanceMetadata.
 func (InstanceMetadata) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.UUID{}).
-			Default(uuid.New),
-		field.Text("namespace").
-			NotEmpty().
-			Annotations(
-				entgql.OrderField("NAME"),
-			),
-		field.JSON("data", json.RawMessage{}).
-			Annotations(),
-		field.Time("created_at").
-			Default(time.Now).
-			Immutable().
-			Annotations(
-				entgql.OrderField("CREATED_AT"),
-			),
-		field.Time("updated_at").
-			Default(time.Now).
-			UpdateDefault(time.Now).
-			Immutable().
-			Annotations(
-				entgql.OrderField("UPDATED_AT"),
-			),
-		field.UUID("instance_id", uuid.UUID{}).
+		field.String("instance_id").
+			GoType(idx.PrefixedID("")).
 			Immutable(),
 	}
 }
@@ -64,6 +49,5 @@ func (InstanceMetadata) Annotations() []schema.Annotation {
 		entgql.RelayConnection(),
 		entgql.QueryField(),
 		entgql.Mutations(entgql.MutationCreate()),
-		entgql.Directives(KeyDirective("id")),
 	}
 }

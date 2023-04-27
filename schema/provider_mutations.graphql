@@ -1,4 +1,0 @@
-extend type Mutation {
-  createInstanceProvider(input: CreateInstanceProviderInput!): InstanceProvider!
-  updateInstanceProvider(input: UpdateInstanceProviderInput!): InstanceProvider!
-}

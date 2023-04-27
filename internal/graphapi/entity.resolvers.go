@@ -8,21 +8,38 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-	"go.infratographer.com/instance-api/internal/ent"
+	ent "go.infratographer.com/instance-api/internal/ent/generated"
+	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
+	"go.infratographer.com/instance-api/xthings/idx"
 )
 
 // FindInstanceByID is the resolver for the findInstanceByID field.
-func (r *entityResolver) FindInstanceByID(ctx context.Context, id uuid.UUID) (*ent.Instance, error) {
-	panic(fmt.Errorf("not implemented: FindInstanceByID - findInstanceByID"))
+func (r *entityResolver) FindInstanceByID(ctx context.Context, id idx.PrefixedID) (*ent.Instance, error) {
+	fmt.Printf("calling findInstanceByID with: %+v\n", id)
+	return r.client.Instance.Get(ctx, id)
 }
 
 // FindInstanceMetadataByID is the resolver for the findInstanceMetadataByID field.
-func (r *entityResolver) FindInstanceMetadataByID(ctx context.Context, id uuid.UUID) (*ent.InstanceMetadata, error) {
-	panic(fmt.Errorf("not implemented: FindInstanceMetadataByID - findInstanceMetadataByID"))
+func (r *entityResolver) FindInstanceMetadataByID(ctx context.Context, id idx.PrefixedID) (*ent.InstanceMetadata, error) {
+	return r.client.InstanceMetadata.Get(ctx, id)
 }
 
-// Entity returns EntityResolver implementation.
-func (r *Resolver) Entity() EntityResolver { return &entityResolver{r} }
+// FindInstanceProviderByID is the resolver for the findInstanceProviderByID field.
+func (r *entityResolver) FindInstanceProviderByID(ctx context.Context, id idx.PrefixedID) (*ent.InstanceProvider, error) {
+	return r.client.InstanceProvider.Get(ctx, id)
+}
+
+// FindLocationByID is the resolver for the findLocationByID field.
+func (r *entityResolver) FindLocationByID(ctx context.Context, id idx.PrefixedID) (*graphapigen.Location, error) {
+	panic(fmt.Errorf("not implemented: FindLocationByID - findLocationByID"))
+}
+
+// FindTenantByID is the resolver for the findTenantByID field.
+func (r *entityResolver) FindTenantByID(ctx context.Context, id idx.PrefixedID) (*graphapigen.Tenant, error) {
+	panic(fmt.Errorf("not implemented: FindTenantByID - findTenantByID"))
+}
+
+// Entity returns graphapigen.EntityResolver implementation.
+func (r *Resolver) Entity() graphapigen.EntityResolver { return &entityResolver{r} }
 
 type entityResolver struct{ *Resolver }

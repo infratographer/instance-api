@@ -1,22 +1,22 @@
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - schemas/*.graphql
+  - schema/*.graphql
 
 # Where should the generated server code go?
 exec:
-  filename: internal/graphapi/generated.go
-  package: graphapi
+  filename: internal/graphapi/generated/generated.go
+  package: graphapigen
 
 # Uncomment to enable federation
 federation:
-  filename: internal/graphapi/federation.go
-  package: graphapi
+  filename: internal/graphapi/generated/federation.go
+  package: graphapigen
   version: 2
 
 # Where should any generated models go?
 model:
-  filename: internal/graphapi/models_gen.go
-  package: graphapi
+  filename: internal/graphapi/generated/models_gen.go
+  package: graphapigen
 
 # Where should the resolver implementations go?
 resolver:
@@ -44,9 +44,9 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
- - "go.infratographer.com/instance-api/internal/ent"
- - "go.infratographer.com/instance-api/internal/ent/instance"
- - "go.infratographer.com/instance-api/internal/ent/instanceprovider"
+ - "go.infratographer.com/instance-api/internal/ent/generated"
+ - "go.infratographer.com/instance-api/internal/ent/generated/instance"
+ - "go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -56,18 +56,19 @@ autobind:
 models:
   ID:
     model:
-      - go.infratographer.com/instance-api/xthings/uuidgql.UUID
+      - go.infratographer.com/instance-api/xthings/idx.PrefixedID
+      # - github.com/99designs/gqlgen/graphql.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
-  RawMessage:
+  JSON:
     model:
       - go.infratographer.com/instance-api/xthings/gqltypes.RawMessage
   Node:
     model:
-      - go.infratographer.com/instance-api/internal/ent.Noder
+      - go.infratographer.com/instance-api/internal/ent/generated.Noder
   Tenant:
     fields:
       instances:

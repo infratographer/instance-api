@@ -4,10 +4,12 @@
 	"name": "instance-api",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "app",
-	"workspaceFolder": "/workspaces/"
+	"workspaceFolder": "/workspaces/",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},

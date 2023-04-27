@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
+	"go.infratographer.com/instance-api/xthings/idx"
 )
 
 // InstanceProvider holds the schema definition for the InstanceProvider entity.
@@ -16,11 +16,15 @@ type InstanceProvider struct {
 	ent.Schema
 }
 
+func (InstanceProvider) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		idx.PrimaryKeyMixin(idPrefixInstanceProvider),
+	}
+}
+
 // Fields of the InstanceProvider.
 func (InstanceProvider) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id", uuid.UUID{}).
-			Default(uuid.New),
 		field.Text("name").
 			NotEmpty().
 			Annotations(

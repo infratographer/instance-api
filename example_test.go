@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"go.infratographer.com/instance-api/internal/ent"
+	ent "go.infratographer.com/instance-api/internal/ent/generated"
 
 	"entgo.io/ent/dialect"
 	_ "github.com/mattn/go-sqlite3"

@@ -8,7 +8,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 
-	"go.infratographer.com/instance-api/internal/ent"
+	ent "go.infratographer.com/instance-api/internal/ent/generated"
+	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
 )
 
 // This file will not be regenerated automatically.
@@ -21,7 +22,7 @@ type Resolver struct {
 
 // NewSchema creates a graphql executable schema.
 func NewSchema(client *ent.Client) graphql.ExecutableSchema {
-	return NewExecutableSchema(Config{
+	return graphapigen.NewExecutableSchema(graphapigen.Config{
 		Resolvers: &Resolver{client},
 	})
 }
@@ -40,8 +41,8 @@ func NewHandler(client *ent.Client) *Handler {
 	}
 
 	h.graphqlHandler = handler.NewDefaultServer(
-		NewExecutableSchema(
-			Config{
+		graphapigen.NewExecutableSchema(
+			graphapigen.Config{
 				Resolvers: h.r,
 			},
 		),

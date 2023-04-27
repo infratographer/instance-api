@@ -1,0 +1,20 @@
+{
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "crdb",
+      "port": 26257,
+      "driver": "CockroachDB",
+      "name": "crdb",
+      "database": "instance_api_dev",
+      "username": "root"
+    },
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "CockroachDB",
+      "name": "instance-crdb",
+      "connectString": "postgresql://root@crdb:26257/instance_api_dev?sslmode=disable"
+    }
+  ]
+}

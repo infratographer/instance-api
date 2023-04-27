@@ -2,8 +2,6 @@
 package config
 
 import (
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"go.infratographer.com/x/crdbx"
 	"go.infratographer.com/x/echox"
 	"go.infratographer.com/x/loggingx"
@@ -16,12 +14,4 @@ var AppConfig struct {
 	Logging loggingx.Config
 	Server  echox.Config
 	Tracing otelx.Config
-	URN     struct {
-		Namespace string `mapstructure:"namespace"`
-	}
-}
-
-// MustViperFlags returns the viper config for application specific config
-func MustViperFlags(v *viper.Viper, _ *pflag.FlagSet) {
-	v.SetDefault("urn.namespace", "infratographer")
 }

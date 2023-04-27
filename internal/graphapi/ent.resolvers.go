@@ -8,36 +8,60 @@ import (
 	"context"
 
 	"entgo.io/contrib/entgql"
-	"github.com/google/uuid"
-	"go.infratographer.com/instance-api/internal/ent"
+	ent "go.infratographer.com/instance-api/internal/ent/generated"
+	"go.infratographer.com/instance-api/internal/ent/generated/instance"
+	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
+	"go.infratographer.com/instance-api/xthings/idx"
 )
 
-// Node is the resolver for the node field.
-func (r *queryResolver) Node(ctx context.Context, id uuid.UUID) (ent.Noder, error) {
-	return r.client.Noder(ctx, id)
+// Location is the resolver for the location field.
+func (r *instanceResolver) Location(ctx context.Context, obj *ent.Instance) (*graphapigen.Location, error) {
+	return &graphapigen.Location{ID: obj.LocationID}, nil
 }
 
-// Nodes is the resolver for the nodes field.
-func (r *queryResolver) Nodes(ctx context.Context, ids []uuid.UUID) ([]ent.Noder, error) {
-	return r.client.Noders(ctx, ids)
+// Tenant is the resolver for the tenant field.
+func (r *instanceResolver) Tenant(ctx context.Context, obj *ent.Instance) (*graphapigen.Tenant, error) {
+	return &graphapigen.Tenant{ID: obj.LocationID}, nil
 }
 
 // Instances is the resolver for the instances field.
-func (r *queryResolver) Instances(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceOrder, where *ent.InstanceWhereInput) (*ent.InstanceConnection, error) {
+func (r *locationResolver) Instances(ctx context.Context, obj *graphapigen.Location, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *ent.InstanceOrder, where *ent.InstanceWhereInput) (*ent.InstanceConnection, error) {
+	return r.client.Instance.Query().Where(instance.LocationID(obj.ID)).Paginate(ctx, after, first, before, last, ent.WithInstanceOrder(orderBy), ent.WithInstanceFilter(where.Filter))
+}
+
+// Instances is the resolver for the instances field.
+func (r *queryResolver) Instances(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *ent.InstanceOrder, where *ent.InstanceWhereInput) (*ent.InstanceConnection, error) {
 	return r.client.Instance.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceOrder(orderBy), ent.WithInstanceFilter(where.Filter))
 }
 
 // InstanceMetadataSlice is the resolver for the instanceMetadataSlice field.
-func (r *queryResolver) InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceMetadataOrder, where *ent.InstanceMetadataWhereInput) (*ent.InstanceMetadataConnection, error) {
+func (r *queryResolver) InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *ent.InstanceMetadataOrder, where *ent.InstanceMetadataWhereInput) (*ent.InstanceMetadataConnection, error) {
 	return r.client.InstanceMetadata.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceMetadataOrder(orderBy), ent.WithInstanceMetadataFilter(where.Filter))
 }
 
 // InstanceProviders is the resolver for the instanceProviders field.
-func (r *queryResolver) InstanceProviders(ctx context.Context, after *entgql.Cursor[uuid.UUID], first *int, before *entgql.Cursor[uuid.UUID], last *int, orderBy *ent.InstanceProviderOrder, where *ent.InstanceProviderWhereInput) (*ent.InstanceProviderConnection, error) {
+func (r *queryResolver) InstanceProviders(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *ent.InstanceProviderOrder, where *ent.InstanceProviderWhereInput) (*ent.InstanceProviderConnection, error) {
 	return r.client.InstanceProvider.Query().Paginate(ctx, after, first, before, last, ent.WithInstanceProviderOrder(orderBy), ent.WithInstanceProviderFilter(where.Filter))
 }
 
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+// Instances is the resolver for the instances field.
+func (r *tenantResolver) Instances(ctx context.Context, obj *graphapigen.Tenant, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *ent.InstanceOrder, where *ent.InstanceWhereInput) (*ent.InstanceConnection, error) {
+	return r.client.Instance.Query().Where(instance.TenantID(obj.ID)).Paginate(ctx, after, first, before, last, ent.WithInstanceOrder(orderBy), ent.WithInstanceFilter(where.Filter))
+}
 
+// Instance returns graphapigen.InstanceResolver implementation.
+func (r *Resolver) Instance() graphapigen.InstanceResolver { return &instanceResolver{r} }
+
+// Location returns graphapigen.LocationResolver implementation.
+func (r *Resolver) Location() graphapigen.LocationResolver { return &locationResolver{r} }
+
+// Query returns graphapigen.QueryResolver implementation.
+func (r *Resolver) Query() graphapigen.QueryResolver { return &queryResolver{r} }
+
+// Tenant returns graphapigen.TenantResolver implementation.
+func (r *Resolver) Tenant() graphapigen.TenantResolver { return &tenantResolver{r} }
+
+type instanceResolver struct{ *Resolver }
+type locationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type tenantResolver struct{ *Resolver }
