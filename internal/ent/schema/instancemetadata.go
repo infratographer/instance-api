@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"go.infratographer.com/instance-api/xthings/entx"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/entx"
+	"go.infratographer.com/x/idx"
 )
 
 // InstanceMetadata holds the schema definition for the InstanceMetadata entity.

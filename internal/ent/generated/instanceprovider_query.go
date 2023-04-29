@@ -28,7 +28,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // InstanceProviderQuery is the builder for querying InstanceProvider entities.

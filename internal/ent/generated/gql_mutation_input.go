@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // CreateInstanceInput represents a mutation input for creating instances.

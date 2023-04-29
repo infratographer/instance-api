@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.

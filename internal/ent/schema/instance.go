@@ -7,8 +7,8 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 
-	"go.infratographer.com/instance-api/xthings/entx"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/entx"
+	"go.infratographer.com/x/idx"
 )
 
 // Instance holds the schema definition for the Instance entity.

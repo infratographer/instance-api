@@ -27,7 +27,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // InstanceMetadataCreate is the builder for creating a InstanceMetadata entity.

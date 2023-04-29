@@ -19,7 +19,7 @@ import (
 	"go.infratographer.com/instance-api/internal/config"
 	ent "go.infratographer.com/instance-api/internal/ent/generated"
 	"go.infratographer.com/instance-api/internal/graphapi"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 var defaultLBAPIListenAddr = ":7608"

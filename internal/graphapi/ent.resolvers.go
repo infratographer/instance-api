@@ -11,7 +11,7 @@ import (
 	ent "go.infratographer.com/instance-api/internal/ent/generated"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // Location is the resolver for the location field.

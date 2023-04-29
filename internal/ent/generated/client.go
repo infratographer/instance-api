@@ -23,7 +23,7 @@ import (
 	"log"
 
 	"go.infratographer.com/instance-api/internal/ent/generated/migrate"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"

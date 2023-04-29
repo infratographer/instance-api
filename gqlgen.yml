@@ -56,7 +56,7 @@ autobind:
 models:
   ID:
     model:
-      - go.infratographer.com/instance-api/xthings/idx.PrefixedID
+      - go.infratographer.com/x/idx.PrefixedID
       # - github.com/99designs/gqlgen/graphql.ID
   Int:
     model:

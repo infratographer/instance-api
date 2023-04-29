@@ -4,7 +4,7 @@ package graphapigen
 
 import (
 	"go.infratographer.com/instance-api/internal/ent/generated"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 type Location struct {

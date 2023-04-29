@@ -25,7 +25,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // Instance is the model entity for the Instance schema.

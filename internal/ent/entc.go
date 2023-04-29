@@ -22,7 +22,7 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
-	"go.infratographer.com/instance-api/xthings/entx"
+	"go.infratographer.com/x/entx"
 )
 
 func main() {

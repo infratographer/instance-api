@@ -26,7 +26,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // InstanceProviderCreate is the builder for creating a InstanceProvider entity.

@@ -26,7 +26,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // InstanceMetadata is the model entity for the InstanceMetadata schema.

@@ -10,7 +10,7 @@ import (
 
 	ent "go.infratographer.com/instance-api/internal/ent/generated"
 	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
-	"go.infratographer.com/instance-api/xthings/idx"
+	"go.infratographer.com/x/idx"
 )
 
 // FindInstanceByID is the resolver for the findInstanceByID field.
