@@ -18,29 +18,24 @@ package generated
 
 import (
 	"encoding/json"
-	"time"
 
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // CreateInstanceInput represents a mutation input for creating instances.
 type CreateInstanceInput struct {
-	LocationID         *idx.PrefixedID
-	TenantID           *idx.PrefixedID
 	Name               string
-	InstanceProviderID idx.PrefixedID
-	MetadatumIDs       []idx.PrefixedID
+	TenantID           gidx.PrefixedID
+	LocationID         gidx.PrefixedID
+	InstanceProviderID gidx.PrefixedID
+	MetadatumIDs       []gidx.PrefixedID
 }
 
 // Mutate applies the CreateInstanceInput on the InstanceMutation builder.
 func (i *CreateInstanceInput) Mutate(m *InstanceMutation) {
-	if v := i.LocationID; v != nil {
-		m.SetLocationID(*v)
-	}
-	if v := i.TenantID; v != nil {
-		m.SetTenantID(*v)
-	}
 	m.SetName(i.Name)
+	m.SetTenantID(i.TenantID)
+	m.SetLocationID(i.LocationID)
 	m.SetInstanceProviderID(i.InstanceProviderID)
 	if v := i.MetadatumIDs; len(v) > 0 {
 		m.AddMetadatumIDs(v...)
@@ -53,24 +48,70 @@ func (c *InstanceCreate) SetInput(i CreateInstanceInput) *InstanceCreate {
 	return c
 }
 
-// CreateInstanceMetadataInput represents a mutation input for creating instancemetadataslice.
-type CreateInstanceMetadataInput struct {
-	Namespace  string
-	Data       json.RawMessage
-	InstanceID idx.PrefixedID
+// UpdateInstanceInput represents a mutation input for updating instances.
+type UpdateInstanceInput struct {
+	Name               *string
+	ClearMetadata      bool
+	AddMetadatumIDs    []gidx.PrefixedID
+	RemoveMetadatumIDs []gidx.PrefixedID
 }
 
-// Mutate applies the CreateInstanceMetadataInput on the InstanceMetadataMutation builder.
-func (i *CreateInstanceMetadataInput) Mutate(m *InstanceMetadataMutation) {
-	m.SetNamespace(i.Namespace)
+// Mutate applies the UpdateInstanceInput on the InstanceMutation builder.
+func (i *UpdateInstanceInput) Mutate(m *InstanceMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearMetadata {
+		m.ClearMetadata()
+	}
+	if v := i.AddMetadatumIDs; len(v) > 0 {
+		m.AddMetadatumIDs(v...)
+	}
+	if v := i.RemoveMetadatumIDs; len(v) > 0 {
+		m.RemoveMetadatumIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateInstanceInput on the InstanceUpdate builder.
+func (c *InstanceUpdate) SetInput(i UpdateInstanceInput) *InstanceUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateInstanceInput on the InstanceUpdateOne builder.
+func (c *InstanceUpdateOne) SetInput(i UpdateInstanceInput) *InstanceUpdateOne {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateInstanceMetadataInput represents a mutation input for updating instancemetadataslice.
+type UpdateInstanceMetadataInput struct {
+	Namespace  *string
+	Data       json.RawMessage
+	AppendData json.RawMessage
+}
+
+// Mutate applies the UpdateInstanceMetadataInput on the InstanceMetadataMutation builder.
+func (i *UpdateInstanceMetadataInput) Mutate(m *InstanceMetadataMutation) {
+	if v := i.Namespace; v != nil {
+		m.SetNamespace(*v)
+	}
 	if v := i.Data; v != nil {
 		m.SetData(v)
 	}
-	m.SetInstanceID(i.InstanceID)
+	if i.AppendData != nil {
+		m.AppendData(i.Data)
+	}
 }
 
-// SetInput applies the change-set in the CreateInstanceMetadataInput on the InstanceMetadataCreate builder.
-func (c *InstanceMetadataCreate) SetInput(i CreateInstanceMetadataInput) *InstanceMetadataCreate {
+// SetInput applies the change-set in the UpdateInstanceMetadataInput on the InstanceMetadataUpdate builder.
+func (c *InstanceMetadataUpdate) SetInput(i UpdateInstanceMetadataInput) *InstanceMetadataUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateInstanceMetadataInput on the InstanceMetadataUpdateOne builder.
+func (c *InstanceMetadataUpdateOne) SetInput(i UpdateInstanceMetadataInput) *InstanceMetadataUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }
@@ -78,20 +119,14 @@ func (c *InstanceMetadataCreate) SetInput(i CreateInstanceMetadataInput) *Instan
 // CreateInstanceProviderInput represents a mutation input for creating instanceproviders.
 type CreateInstanceProviderInput struct {
 	Name        string
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	InstanceIDs []idx.PrefixedID
+	TenantID    gidx.PrefixedID
+	InstanceIDs []gidx.PrefixedID
 }
 
 // Mutate applies the CreateInstanceProviderInput on the InstanceProviderMutation builder.
 func (i *CreateInstanceProviderInput) Mutate(m *InstanceProviderMutation) {
 	m.SetName(i.Name)
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
+	m.SetTenantID(i.TenantID)
 	if v := i.InstanceIDs; len(v) > 0 {
 		m.AddInstanceIDs(v...)
 	}
@@ -99,6 +134,42 @@ func (i *CreateInstanceProviderInput) Mutate(m *InstanceProviderMutation) {
 
 // SetInput applies the change-set in the CreateInstanceProviderInput on the InstanceProviderCreate builder.
 func (c *InstanceProviderCreate) SetInput(i CreateInstanceProviderInput) *InstanceProviderCreate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// UpdateInstanceProviderInput represents a mutation input for updating instanceproviders.
+type UpdateInstanceProviderInput struct {
+	Name              *string
+	ClearInstances    bool
+	AddInstanceIDs    []gidx.PrefixedID
+	RemoveInstanceIDs []gidx.PrefixedID
+}
+
+// Mutate applies the UpdateInstanceProviderInput on the InstanceProviderMutation builder.
+func (i *UpdateInstanceProviderInput) Mutate(m *InstanceProviderMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearInstances {
+		m.ClearInstances()
+	}
+	if v := i.AddInstanceIDs; len(v) > 0 {
+		m.AddInstanceIDs(v...)
+	}
+	if v := i.RemoveInstanceIDs; len(v) > 0 {
+		m.RemoveInstanceIDs(v...)
+	}
+}
+
+// SetInput applies the change-set in the UpdateInstanceProviderInput on the InstanceProviderUpdate builder.
+func (c *InstanceProviderUpdate) SetInput(i UpdateInstanceProviderInput) *InstanceProviderUpdate {
+	i.Mutate(c.Mutation())
+	return c
+}
+
+// SetInput applies the change-set in the UpdateInstanceProviderInput on the InstanceProviderUpdateOne builder.
+func (c *InstanceProviderUpdateOne) SetInput(i UpdateInstanceProviderInput) *InstanceProviderUpdateOne {
 	i.Mutate(c.Mutation())
 	return c
 }

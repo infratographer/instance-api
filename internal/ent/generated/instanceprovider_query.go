@@ -28,7 +28,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceProviderQuery is the builder for querying InstanceProvider entities.
@@ -124,8 +124,8 @@ func (ipq *InstanceProviderQuery) FirstX(ctx context.Context) *InstanceProvider 
 
 // FirstID returns the first InstanceProvider ID from the query.
 // Returns a *NotFoundError when no InstanceProvider ID was found.
-func (ipq *InstanceProviderQuery) FirstID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (ipq *InstanceProviderQuery) FirstID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = ipq.Limit(1).IDs(setContextOp(ctx, ipq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -137,7 +137,7 @@ func (ipq *InstanceProviderQuery) FirstID(ctx context.Context) (id idx.PrefixedI
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ipq *InstanceProviderQuery) FirstIDX(ctx context.Context) idx.PrefixedID {
+func (ipq *InstanceProviderQuery) FirstIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := ipq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -175,8 +175,8 @@ func (ipq *InstanceProviderQuery) OnlyX(ctx context.Context) *InstanceProvider {
 // OnlyID is like Only, but returns the only InstanceProvider ID in the query.
 // Returns a *NotSingularError when more than one InstanceProvider ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ipq *InstanceProviderQuery) OnlyID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (ipq *InstanceProviderQuery) OnlyID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = ipq.Limit(2).IDs(setContextOp(ctx, ipq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func (ipq *InstanceProviderQuery) OnlyID(ctx context.Context) (id idx.PrefixedID
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ipq *InstanceProviderQuery) OnlyIDX(ctx context.Context) idx.PrefixedID {
+func (ipq *InstanceProviderQuery) OnlyIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := ipq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -220,7 +220,7 @@ func (ipq *InstanceProviderQuery) AllX(ctx context.Context) []*InstanceProvider 
 }
 
 // IDs executes the query and returns a list of InstanceProvider IDs.
-func (ipq *InstanceProviderQuery) IDs(ctx context.Context) (ids []idx.PrefixedID, err error) {
+func (ipq *InstanceProviderQuery) IDs(ctx context.Context) (ids []gidx.PrefixedID, err error) {
 	if ipq.ctx.Unique == nil && ipq.path != nil {
 		ipq.Unique(true)
 	}
@@ -232,7 +232,7 @@ func (ipq *InstanceProviderQuery) IDs(ctx context.Context) (ids []idx.PrefixedID
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ipq *InstanceProviderQuery) IDsX(ctx context.Context) []idx.PrefixedID {
+func (ipq *InstanceProviderQuery) IDsX(ctx context.Context) []gidx.PrefixedID {
 	ids, err := ipq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -316,12 +316,12 @@ func (ipq *InstanceProviderQuery) WithInstances(opts ...func(*InstanceQuery)) *I
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.InstanceProvider.Query().
-//		GroupBy(instanceprovider.FieldName).
+//		GroupBy(instanceprovider.FieldCreatedAt).
 //		Aggregate(generated.Count()).
 //		Scan(ctx, &v)
 func (ipq *InstanceProviderQuery) GroupBy(field string, fields ...string) *InstanceProviderGroupBy {
@@ -339,11 +339,11 @@ func (ipq *InstanceProviderQuery) GroupBy(field string, fields ...string) *Insta
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.InstanceProvider.Query().
-//		Select(instanceprovider.FieldName).
+//		Select(instanceprovider.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (ipq *InstanceProviderQuery) Select(fields ...string) *InstanceProviderSelect {
 	ipq.ctx.Fields = append(ipq.ctx.Fields, fields...)
@@ -437,7 +437,7 @@ func (ipq *InstanceProviderQuery) sqlAll(ctx context.Context, hooks ...queryHook
 
 func (ipq *InstanceProviderQuery) loadInstances(ctx context.Context, query *InstanceQuery, nodes []*InstanceProvider, init func(*InstanceProvider), assign func(*InstanceProvider, *Instance)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[idx.PrefixedID]*InstanceProvider)
+	nodeids := make(map[gidx.PrefixedID]*InstanceProvider)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]

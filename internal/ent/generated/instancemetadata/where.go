@@ -23,51 +23,51 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/dialect/sql/sqljson"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id idx.PrefixedID) predicate.InstanceMetadata {
+func ID(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDEQ(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDNEQ(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...idx.PrefixedID) predicate.InstanceMetadata {
+func IDIn(ids ...gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...idx.PrefixedID) predicate.InstanceMetadata {
+func IDNotIn(ids ...gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDGT(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDGTE(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDLT(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id idx.PrefixedID) predicate.InstanceMetadata {
+func IDLTE(id gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldLTE(FieldID, id))
 }
 
@@ -87,7 +87,7 @@ func UpdatedAt(v time.Time) predicate.InstanceMetadata {
 }
 
 // InstanceID applies equality check predicate on the "instance_id" field. It's identical to InstanceIDEQ.
-func InstanceID(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceID(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldEQ(FieldInstanceID, v))
 }
 
@@ -237,71 +237,71 @@ func UpdatedAtLTE(v time.Time) predicate.InstanceMetadata {
 }
 
 // InstanceIDEQ applies the EQ predicate on the "instance_id" field.
-func InstanceIDEQ(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDEQ(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldEQ(FieldInstanceID, v))
 }
 
 // InstanceIDNEQ applies the NEQ predicate on the "instance_id" field.
-func InstanceIDNEQ(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDNEQ(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldNEQ(FieldInstanceID, v))
 }
 
 // InstanceIDIn applies the In predicate on the "instance_id" field.
-func InstanceIDIn(vs ...idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDIn(vs ...gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldIn(FieldInstanceID, vs...))
 }
 
 // InstanceIDNotIn applies the NotIn predicate on the "instance_id" field.
-func InstanceIDNotIn(vs ...idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDNotIn(vs ...gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldNotIn(FieldInstanceID, vs...))
 }
 
 // InstanceIDGT applies the GT predicate on the "instance_id" field.
-func InstanceIDGT(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDGT(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldGT(FieldInstanceID, v))
 }
 
 // InstanceIDGTE applies the GTE predicate on the "instance_id" field.
-func InstanceIDGTE(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDGTE(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldGTE(FieldInstanceID, v))
 }
 
 // InstanceIDLT applies the LT predicate on the "instance_id" field.
-func InstanceIDLT(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDLT(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldLT(FieldInstanceID, v))
 }
 
 // InstanceIDLTE applies the LTE predicate on the "instance_id" field.
-func InstanceIDLTE(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDLTE(v gidx.PrefixedID) predicate.InstanceMetadata {
 	return predicate.InstanceMetadata(sql.FieldLTE(FieldInstanceID, v))
 }
 
 // InstanceIDContains applies the Contains predicate on the "instance_id" field.
-func InstanceIDContains(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDContains(v gidx.PrefixedID) predicate.InstanceMetadata {
 	vc := string(v)
 	return predicate.InstanceMetadata(sql.FieldContains(FieldInstanceID, vc))
 }
 
 // InstanceIDHasPrefix applies the HasPrefix predicate on the "instance_id" field.
-func InstanceIDHasPrefix(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDHasPrefix(v gidx.PrefixedID) predicate.InstanceMetadata {
 	vc := string(v)
 	return predicate.InstanceMetadata(sql.FieldHasPrefix(FieldInstanceID, vc))
 }
 
 // InstanceIDHasSuffix applies the HasSuffix predicate on the "instance_id" field.
-func InstanceIDHasSuffix(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDHasSuffix(v gidx.PrefixedID) predicate.InstanceMetadata {
 	vc := string(v)
 	return predicate.InstanceMetadata(sql.FieldHasSuffix(FieldInstanceID, vc))
 }
 
 // InstanceIDEqualFold applies the EqualFold predicate on the "instance_id" field.
-func InstanceIDEqualFold(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDEqualFold(v gidx.PrefixedID) predicate.InstanceMetadata {
 	vc := string(v)
 	return predicate.InstanceMetadata(sql.FieldEqualFold(FieldInstanceID, vc))
 }
 
 // InstanceIDContainsFold applies the ContainsFold predicate on the "instance_id" field.
-func InstanceIDContainsFold(v idx.PrefixedID) predicate.InstanceMetadata {
+func InstanceIDContainsFold(v gidx.PrefixedID) predicate.InstanceMetadata {
 	vc := string(v)
 	return predicate.InstanceMetadata(sql.FieldContainsFold(FieldInstanceID, vc))
 }

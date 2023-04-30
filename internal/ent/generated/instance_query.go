@@ -29,7 +29,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceQuery is the builder for querying Instance entities.
@@ -148,8 +148,8 @@ func (iq *InstanceQuery) FirstX(ctx context.Context) *Instance {
 
 // FirstID returns the first Instance ID from the query.
 // Returns a *NotFoundError when no Instance ID was found.
-func (iq *InstanceQuery) FirstID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (iq *InstanceQuery) FirstID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -161,7 +161,7 @@ func (iq *InstanceQuery) FirstID(ctx context.Context) (id idx.PrefixedID, err er
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (iq *InstanceQuery) FirstIDX(ctx context.Context) idx.PrefixedID {
+func (iq *InstanceQuery) FirstIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := iq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -199,8 +199,8 @@ func (iq *InstanceQuery) OnlyX(ctx context.Context) *Instance {
 // OnlyID is like Only, but returns the only Instance ID in the query.
 // Returns a *NotSingularError when more than one Instance ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (iq *InstanceQuery) OnlyID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (iq *InstanceQuery) OnlyID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -216,7 +216,7 @@ func (iq *InstanceQuery) OnlyID(ctx context.Context) (id idx.PrefixedID, err err
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (iq *InstanceQuery) OnlyIDX(ctx context.Context) idx.PrefixedID {
+func (iq *InstanceQuery) OnlyIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := iq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -244,7 +244,7 @@ func (iq *InstanceQuery) AllX(ctx context.Context) []*Instance {
 }
 
 // IDs executes the query and returns a list of Instance IDs.
-func (iq *InstanceQuery) IDs(ctx context.Context) (ids []idx.PrefixedID, err error) {
+func (iq *InstanceQuery) IDs(ctx context.Context) (ids []gidx.PrefixedID, err error) {
 	if iq.ctx.Unique == nil && iq.path != nil {
 		iq.Unique(true)
 	}
@@ -256,7 +256,7 @@ func (iq *InstanceQuery) IDs(ctx context.Context) (ids []idx.PrefixedID, err err
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (iq *InstanceQuery) IDsX(ctx context.Context) []idx.PrefixedID {
+func (iq *InstanceQuery) IDsX(ctx context.Context) []gidx.PrefixedID {
 	ids, err := iq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -352,12 +352,12 @@ func (iq *InstanceQuery) WithMetadata(opts ...func(*InstanceMetadataQuery)) *Ins
 // Example:
 //
 //	var v []struct {
-//		LocationID idx.PrefixedID `json:"location_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Instance.Query().
-//		GroupBy(instance.FieldLocationID).
+//		GroupBy(instance.FieldCreatedAt).
 //		Aggregate(generated.Count()).
 //		Scan(ctx, &v)
 func (iq *InstanceQuery) GroupBy(field string, fields ...string) *InstanceGroupBy {
@@ -375,11 +375,11 @@ func (iq *InstanceQuery) GroupBy(field string, fields ...string) *InstanceGroupB
 // Example:
 //
 //	var v []struct {
-//		LocationID idx.PrefixedID `json:"location_id,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.Instance.Query().
-//		Select(instance.FieldLocationID).
+//		Select(instance.FieldCreatedAt).
 //		Scan(ctx, &v)
 func (iq *InstanceQuery) Select(fields ...string) *InstanceSelect {
 	iq.ctx.Fields = append(iq.ctx.Fields, fields...)
@@ -479,8 +479,8 @@ func (iq *InstanceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ins
 }
 
 func (iq *InstanceQuery) loadInstanceProvider(ctx context.Context, query *InstanceProviderQuery, nodes []*Instance, init func(*Instance), assign func(*Instance, *InstanceProvider)) error {
-	ids := make([]idx.PrefixedID, 0, len(nodes))
-	nodeids := make(map[idx.PrefixedID][]*Instance)
+	ids := make([]gidx.PrefixedID, 0, len(nodes))
+	nodeids := make(map[gidx.PrefixedID][]*Instance)
 	for i := range nodes {
 		fk := nodes[i].InstanceProviderID
 		if _, ok := nodeids[fk]; !ok {
@@ -509,7 +509,7 @@ func (iq *InstanceQuery) loadInstanceProvider(ctx context.Context, query *Instan
 }
 func (iq *InstanceQuery) loadMetadata(ctx context.Context, query *InstanceMetadataQuery, nodes []*Instance, init func(*Instance), assign func(*Instance, *InstanceMetadata)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[idx.PrefixedID]*Instance)
+	nodeids := make(map[gidx.PrefixedID]*Instance)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]

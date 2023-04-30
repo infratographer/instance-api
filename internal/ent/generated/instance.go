@@ -25,26 +25,26 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // Instance is the model entity for the Instance schema.
 type Instance struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID idx.PrefixedID `json:"id,omitempty"`
-	// LocationID holds the value of the "location_id" field.
-	LocationID idx.PrefixedID `json:"location_id,omitempty"`
-	// TenantID holds the value of the "tenant_id" field.
-	TenantID idx.PrefixedID `json:"tenant_id,omitempty"`
+	ID gidx.PrefixedID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// TenantID holds the value of the "tenant_id" field.
+	TenantID gidx.PrefixedID `json:"tenant_id,omitempty"`
+	// LocationID holds the value of the "location_id" field.
+	LocationID gidx.PrefixedID `json:"location_id,omitempty"`
 	// InstanceProviderID holds the value of the "instance_provider_id" field.
-	InstanceProviderID idx.PrefixedID `json:"instance_provider_id,omitempty"`
+	InstanceProviderID gidx.PrefixedID `json:"instance_provider_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InstanceQuery when eager-loading is set.
 	Edges        InstanceEdges `json:"edges"`
@@ -93,8 +93,8 @@ func (*Instance) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case instance.FieldID, instance.FieldLocationID, instance.FieldTenantID, instance.FieldInstanceProviderID:
-			values[i] = new(idx.PrefixedID)
+		case instance.FieldID, instance.FieldTenantID, instance.FieldLocationID, instance.FieldInstanceProviderID:
+			values[i] = new(gidx.PrefixedID)
 		case instance.FieldName:
 			values[i] = new(sql.NullString)
 		case instance.FieldCreatedAt, instance.FieldUpdatedAt:
@@ -115,22 +115,10 @@ func (i *Instance) assignValues(columns []string, values []any) error {
 	for j := range columns {
 		switch columns[j] {
 		case instance.FieldID:
-			if value, ok := values[j].(*idx.PrefixedID); !ok {
+			if value, ok := values[j].(*gidx.PrefixedID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[j])
 			} else if value != nil {
 				i.ID = *value
-			}
-		case instance.FieldLocationID:
-			if value, ok := values[j].(*idx.PrefixedID); !ok {
-				return fmt.Errorf("unexpected type %T for field location_id", values[j])
-			} else if value != nil {
-				i.LocationID = *value
-			}
-		case instance.FieldTenantID:
-			if value, ok := values[j].(*idx.PrefixedID); !ok {
-				return fmt.Errorf("unexpected type %T for field tenant_id", values[j])
-			} else if value != nil {
-				i.TenantID = *value
 			}
 		case instance.FieldCreatedAt:
 			if value, ok := values[j].(*sql.NullTime); !ok {
@@ -150,8 +138,20 @@ func (i *Instance) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				i.Name = value.String
 			}
+		case instance.FieldTenantID:
+			if value, ok := values[j].(*gidx.PrefixedID); !ok {
+				return fmt.Errorf("unexpected type %T for field tenant_id", values[j])
+			} else if value != nil {
+				i.TenantID = *value
+			}
+		case instance.FieldLocationID:
+			if value, ok := values[j].(*gidx.PrefixedID); !ok {
+				return fmt.Errorf("unexpected type %T for field location_id", values[j])
+			} else if value != nil {
+				i.LocationID = *value
+			}
 		case instance.FieldInstanceProviderID:
-			if value, ok := values[j].(*idx.PrefixedID); !ok {
+			if value, ok := values[j].(*gidx.PrefixedID); !ok {
 				return fmt.Errorf("unexpected type %T for field instance_provider_id", values[j])
 			} else if value != nil {
 				i.InstanceProviderID = *value
@@ -202,12 +202,6 @@ func (i *Instance) String() string {
 	var builder strings.Builder
 	builder.WriteString("Instance(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", i.ID))
-	builder.WriteString("location_id=")
-	builder.WriteString(fmt.Sprintf("%v", i.LocationID))
-	builder.WriteString(", ")
-	builder.WriteString("tenant_id=")
-	builder.WriteString(fmt.Sprintf("%v", i.TenantID))
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(i.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
@@ -216,6 +210,12 @@ func (i *Instance) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(i.Name)
+	builder.WriteString(", ")
+	builder.WriteString("tenant_id=")
+	builder.WriteString(fmt.Sprintf("%v", i.TenantID))
+	builder.WriteString(", ")
+	builder.WriteString("location_id=")
+	builder.WriteString(fmt.Sprintf("%v", i.LocationID))
 	builder.WriteString(", ")
 	builder.WriteString("instance_provider_id=")
 	builder.WriteString(fmt.Sprintf("%v", i.InstanceProviderID))

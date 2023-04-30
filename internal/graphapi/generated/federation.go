@@ -88,7 +88,7 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 			switch resolverName {
 
 			case "findInstanceByID":
-				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, rep["id"])
+				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, rep["id"])
 				if err != nil {
 					return fmt.Errorf(`unmarshalling param 0 for findInstanceByID(): %w`, err)
 				}
@@ -108,7 +108,7 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 			switch resolverName {
 
 			case "findInstanceMetadataByID":
-				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, rep["id"])
+				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, rep["id"])
 				if err != nil {
 					return fmt.Errorf(`unmarshalling param 0 for findInstanceMetadataByID(): %w`, err)
 				}
@@ -128,7 +128,7 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 			switch resolverName {
 
 			case "findInstanceProviderByID":
-				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, rep["id"])
+				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, rep["id"])
 				if err != nil {
 					return fmt.Errorf(`unmarshalling param 0 for findInstanceProviderByID(): %w`, err)
 				}
@@ -148,7 +148,7 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 			switch resolverName {
 
 			case "findLocationByID":
-				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, rep["id"])
+				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, rep["id"])
 				if err != nil {
 					return fmt.Errorf(`unmarshalling param 0 for findLocationByID(): %w`, err)
 				}
@@ -168,7 +168,7 @@ func (ec *executionContext) __resolve_entities(ctx context.Context, representati
 			switch resolverName {
 
 			case "findTenantByID":
-				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, rep["id"])
+				id0, err := ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, rep["id"])
 				if err != nil {
 					return fmt.Errorf(`unmarshalling param 0 for findTenantByID(): %w`, err)
 				}

@@ -6,8 +6,9 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"go.infratographer.com/x/entx"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceMetadata holds the schema definition for the InstanceMetadata entity.
@@ -17,7 +18,6 @@ type InstanceMetadata struct {
 
 func (InstanceMetadata) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		idx.PrimaryKeyMixin(idPrefixInstanceMetadata),
 		entx.NamespacedDataMixin{},
 		entx.TimestampsMixin{},
 	}
@@ -26,9 +26,21 @@ func (InstanceMetadata) Mixin() []ent.Mixin {
 // Fields of the InstanceMetadata.
 func (InstanceMetadata) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("instance_id").
-			GoType(idx.PrefixedID("")).
+		field.String("id").
+			GoType(gidx.PrefixedID("")).
+			DefaultFunc(func() gidx.PrefixedID { return gidx.MustNewID(idPrefixInstance) }).
+			Unique().
 			Immutable(),
+		field.String("instance_id").
+			GoType(gidx.PrefixedID("")).
+			Immutable(),
+	}
+}
+
+// Indexed for InstanceMetadata
+func (InstanceMetadata) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("instance_id"),
 	}
 }
 
@@ -46,8 +58,9 @@ func (InstanceMetadata) Edges() []ent.Edge {
 
 func (InstanceMetadata) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entx.GraphKeyDirective("id"),
 		entgql.RelayConnection(),
 		entgql.QueryField(),
-		entgql.Mutations(entgql.MutationCreate()),
+		entgql.Mutations(entgql.MutationUpdate().Description("The fields used to set an annotation on an Instance")),
 	}
 }

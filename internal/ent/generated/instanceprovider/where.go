@@ -22,57 +22,52 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id idx.PrefixedID) predicate.InstanceProvider {
+func ID(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id idx.PrefixedID) predicate.InstanceProvider {
+func IDEQ(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id idx.PrefixedID) predicate.InstanceProvider {
+func IDNEQ(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...idx.PrefixedID) predicate.InstanceProvider {
+func IDIn(ids ...gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...idx.PrefixedID) predicate.InstanceProvider {
+func IDNotIn(ids ...gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id idx.PrefixedID) predicate.InstanceProvider {
+func IDGT(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id idx.PrefixedID) predicate.InstanceProvider {
+func IDGTE(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id idx.PrefixedID) predicate.InstanceProvider {
+func IDLT(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id idx.PrefixedID) predicate.InstanceProvider {
+func IDLTE(id gidx.PrefixedID) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldLTE(FieldID, id))
-}
-
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldEQ(FieldName, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -85,69 +80,14 @@ func UpdatedAt(v time.Time) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.InstanceProvider {
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldEQ(FieldName, v))
 }
 
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.InstanceProvider {
-	return predicate.InstanceProvider(sql.FieldContainsFold(FieldName, v))
+// TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
+func TenantID(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldEQ(FieldTenantID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -228,6 +168,141 @@ func UpdatedAtLT(v time.Time) predicate.InstanceProvider {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.InstanceProvider {
 	return predicate.InstanceProvider(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldEQ(FieldName, v))
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldNEQ(FieldName, v))
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldIn(FieldName, vs...))
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldNotIn(FieldName, vs...))
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldGT(FieldName, v))
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldGTE(FieldName, v))
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldLT(FieldName, v))
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldContainsFold(FieldName, v))
+}
+
+// TenantIDEQ applies the EQ predicate on the "tenant_id" field.
+func TenantIDEQ(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldEQ(FieldTenantID, v))
+}
+
+// TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
+func TenantIDNEQ(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldNEQ(FieldTenantID, v))
+}
+
+// TenantIDIn applies the In predicate on the "tenant_id" field.
+func TenantIDIn(vs ...gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldIn(FieldTenantID, vs...))
+}
+
+// TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
+func TenantIDNotIn(vs ...gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldNotIn(FieldTenantID, vs...))
+}
+
+// TenantIDGT applies the GT predicate on the "tenant_id" field.
+func TenantIDGT(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldGT(FieldTenantID, v))
+}
+
+// TenantIDGTE applies the GTE predicate on the "tenant_id" field.
+func TenantIDGTE(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldGTE(FieldTenantID, v))
+}
+
+// TenantIDLT applies the LT predicate on the "tenant_id" field.
+func TenantIDLT(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldLT(FieldTenantID, v))
+}
+
+// TenantIDLTE applies the LTE predicate on the "tenant_id" field.
+func TenantIDLTE(v gidx.PrefixedID) predicate.InstanceProvider {
+	return predicate.InstanceProvider(sql.FieldLTE(FieldTenantID, v))
+}
+
+// TenantIDContains applies the Contains predicate on the "tenant_id" field.
+func TenantIDContains(v gidx.PrefixedID) predicate.InstanceProvider {
+	vc := string(v)
+	return predicate.InstanceProvider(sql.FieldContains(FieldTenantID, vc))
+}
+
+// TenantIDHasPrefix applies the HasPrefix predicate on the "tenant_id" field.
+func TenantIDHasPrefix(v gidx.PrefixedID) predicate.InstanceProvider {
+	vc := string(v)
+	return predicate.InstanceProvider(sql.FieldHasPrefix(FieldTenantID, vc))
+}
+
+// TenantIDHasSuffix applies the HasSuffix predicate on the "tenant_id" field.
+func TenantIDHasSuffix(v gidx.PrefixedID) predicate.InstanceProvider {
+	vc := string(v)
+	return predicate.InstanceProvider(sql.FieldHasSuffix(FieldTenantID, vc))
+}
+
+// TenantIDEqualFold applies the EqualFold predicate on the "tenant_id" field.
+func TenantIDEqualFold(v gidx.PrefixedID) predicate.InstanceProvider {
+	vc := string(v)
+	return predicate.InstanceProvider(sql.FieldEqualFold(FieldTenantID, vc))
+}
+
+// TenantIDContainsFold applies the ContainsFold predicate on the "tenant_id" field.
+func TenantIDContainsFold(v gidx.PrefixedID) predicate.InstanceProvider {
+	vc := string(v)
+	return predicate.InstanceProvider(sql.FieldContainsFold(FieldTenantID, vc))
 }
 
 // HasInstances applies the HasEdge predicate on the "instances" edge.

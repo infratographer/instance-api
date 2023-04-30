@@ -25,7 +25,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceWhereInput represents a where input for filtering Instance queries.
@@ -36,48 +36,14 @@ type InstanceWhereInput struct {
 	And        []*InstanceWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *idx.PrefixedID  `json:"id,omitempty"`
-	IDNEQ   *idx.PrefixedID  `json:"idNEQ,omitempty"`
-	IDIn    []idx.PrefixedID `json:"idIn,omitempty"`
-	IDNotIn []idx.PrefixedID `json:"idNotIn,omitempty"`
-	IDGT    *idx.PrefixedID  `json:"idGT,omitempty"`
-	IDGTE   *idx.PrefixedID  `json:"idGTE,omitempty"`
-	IDLT    *idx.PrefixedID  `json:"idLT,omitempty"`
-	IDLTE   *idx.PrefixedID  `json:"idLTE,omitempty"`
-
-	// "location_id" field predicates.
-	LocationID             *idx.PrefixedID  `json:"locationID,omitempty"`
-	LocationIDNEQ          *idx.PrefixedID  `json:"locationIDNEQ,omitempty"`
-	LocationIDIn           []idx.PrefixedID `json:"locationIDIn,omitempty"`
-	LocationIDNotIn        []idx.PrefixedID `json:"locationIDNotIn,omitempty"`
-	LocationIDGT           *idx.PrefixedID  `json:"locationIDGT,omitempty"`
-	LocationIDGTE          *idx.PrefixedID  `json:"locationIDGTE,omitempty"`
-	LocationIDLT           *idx.PrefixedID  `json:"locationIDLT,omitempty"`
-	LocationIDLTE          *idx.PrefixedID  `json:"locationIDLTE,omitempty"`
-	LocationIDContains     *idx.PrefixedID  `json:"locationIDContains,omitempty"`
-	LocationIDHasPrefix    *idx.PrefixedID  `json:"locationIDHasPrefix,omitempty"`
-	LocationIDHasSuffix    *idx.PrefixedID  `json:"locationIDHasSuffix,omitempty"`
-	LocationIDIsNil        bool             `json:"locationIDIsNil,omitempty"`
-	LocationIDNotNil       bool             `json:"locationIDNotNil,omitempty"`
-	LocationIDEqualFold    *idx.PrefixedID  `json:"locationIDEqualFold,omitempty"`
-	LocationIDContainsFold *idx.PrefixedID  `json:"locationIDContainsFold,omitempty"`
-
-	// "tenant_id" field predicates.
-	TenantID             *idx.PrefixedID  `json:"tenantID,omitempty"`
-	TenantIDNEQ          *idx.PrefixedID  `json:"tenantIDNEQ,omitempty"`
-	TenantIDIn           []idx.PrefixedID `json:"tenantIDIn,omitempty"`
-	TenantIDNotIn        []idx.PrefixedID `json:"tenantIDNotIn,omitempty"`
-	TenantIDGT           *idx.PrefixedID  `json:"tenantIDGT,omitempty"`
-	TenantIDGTE          *idx.PrefixedID  `json:"tenantIDGTE,omitempty"`
-	TenantIDLT           *idx.PrefixedID  `json:"tenantIDLT,omitempty"`
-	TenantIDLTE          *idx.PrefixedID  `json:"tenantIDLTE,omitempty"`
-	TenantIDContains     *idx.PrefixedID  `json:"tenantIDContains,omitempty"`
-	TenantIDHasPrefix    *idx.PrefixedID  `json:"tenantIDHasPrefix,omitempty"`
-	TenantIDHasSuffix    *idx.PrefixedID  `json:"tenantIDHasSuffix,omitempty"`
-	TenantIDIsNil        bool             `json:"tenantIDIsNil,omitempty"`
-	TenantIDNotNil       bool             `json:"tenantIDNotNil,omitempty"`
-	TenantIDEqualFold    *idx.PrefixedID  `json:"tenantIDEqualFold,omitempty"`
-	TenantIDContainsFold *idx.PrefixedID  `json:"tenantIDContainsFold,omitempty"`
+	ID      *gidx.PrefixedID  `json:"id,omitempty"`
+	IDNEQ   *gidx.PrefixedID  `json:"idNEQ,omitempty"`
+	IDIn    []gidx.PrefixedID `json:"idIn,omitempty"`
+	IDNotIn []gidx.PrefixedID `json:"idNotIn,omitempty"`
+	IDGT    *gidx.PrefixedID  `json:"idGT,omitempty"`
+	IDGTE   *gidx.PrefixedID  `json:"idGTE,omitempty"`
+	IDLT    *gidx.PrefixedID  `json:"idLT,omitempty"`
+	IDLTE   *gidx.PrefixedID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -113,21 +79,6 @@ type InstanceWhereInput struct {
 	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
-	// "instance_provider_id" field predicates.
-	InstanceProviderID             *idx.PrefixedID  `json:"instanceProviderID,omitempty"`
-	InstanceProviderIDNEQ          *idx.PrefixedID  `json:"instanceProviderIDNEQ,omitempty"`
-	InstanceProviderIDIn           []idx.PrefixedID `json:"instanceProviderIDIn,omitempty"`
-	InstanceProviderIDNotIn        []idx.PrefixedID `json:"instanceProviderIDNotIn,omitempty"`
-	InstanceProviderIDGT           *idx.PrefixedID  `json:"instanceProviderIDGT,omitempty"`
-	InstanceProviderIDGTE          *idx.PrefixedID  `json:"instanceProviderIDGTE,omitempty"`
-	InstanceProviderIDLT           *idx.PrefixedID  `json:"instanceProviderIDLT,omitempty"`
-	InstanceProviderIDLTE          *idx.PrefixedID  `json:"instanceProviderIDLTE,omitempty"`
-	InstanceProviderIDContains     *idx.PrefixedID  `json:"instanceProviderIDContains,omitempty"`
-	InstanceProviderIDHasPrefix    *idx.PrefixedID  `json:"instanceProviderIDHasPrefix,omitempty"`
-	InstanceProviderIDHasSuffix    *idx.PrefixedID  `json:"instanceProviderIDHasSuffix,omitempty"`
-	InstanceProviderIDEqualFold    *idx.PrefixedID  `json:"instanceProviderIDEqualFold,omitempty"`
-	InstanceProviderIDContainsFold *idx.PrefixedID  `json:"instanceProviderIDContainsFold,omitempty"`
 
 	// "instance_provider" edge predicates.
 	HasInstanceProvider     *bool                         `json:"hasInstanceProvider,omitempty"`
@@ -233,96 +184,6 @@ func (i *InstanceWhereInput) P() (predicate.Instance, error) {
 	if i.IDLTE != nil {
 		predicates = append(predicates, instance.IDLTE(*i.IDLTE))
 	}
-	if i.LocationID != nil {
-		predicates = append(predicates, instance.LocationIDEQ(*i.LocationID))
-	}
-	if i.LocationIDNEQ != nil {
-		predicates = append(predicates, instance.LocationIDNEQ(*i.LocationIDNEQ))
-	}
-	if len(i.LocationIDIn) > 0 {
-		predicates = append(predicates, instance.LocationIDIn(i.LocationIDIn...))
-	}
-	if len(i.LocationIDNotIn) > 0 {
-		predicates = append(predicates, instance.LocationIDNotIn(i.LocationIDNotIn...))
-	}
-	if i.LocationIDGT != nil {
-		predicates = append(predicates, instance.LocationIDGT(*i.LocationIDGT))
-	}
-	if i.LocationIDGTE != nil {
-		predicates = append(predicates, instance.LocationIDGTE(*i.LocationIDGTE))
-	}
-	if i.LocationIDLT != nil {
-		predicates = append(predicates, instance.LocationIDLT(*i.LocationIDLT))
-	}
-	if i.LocationIDLTE != nil {
-		predicates = append(predicates, instance.LocationIDLTE(*i.LocationIDLTE))
-	}
-	if i.LocationIDContains != nil {
-		predicates = append(predicates, instance.LocationIDContains(*i.LocationIDContains))
-	}
-	if i.LocationIDHasPrefix != nil {
-		predicates = append(predicates, instance.LocationIDHasPrefix(*i.LocationIDHasPrefix))
-	}
-	if i.LocationIDHasSuffix != nil {
-		predicates = append(predicates, instance.LocationIDHasSuffix(*i.LocationIDHasSuffix))
-	}
-	if i.LocationIDIsNil {
-		predicates = append(predicates, instance.LocationIDIsNil())
-	}
-	if i.LocationIDNotNil {
-		predicates = append(predicates, instance.LocationIDNotNil())
-	}
-	if i.LocationIDEqualFold != nil {
-		predicates = append(predicates, instance.LocationIDEqualFold(*i.LocationIDEqualFold))
-	}
-	if i.LocationIDContainsFold != nil {
-		predicates = append(predicates, instance.LocationIDContainsFold(*i.LocationIDContainsFold))
-	}
-	if i.TenantID != nil {
-		predicates = append(predicates, instance.TenantIDEQ(*i.TenantID))
-	}
-	if i.TenantIDNEQ != nil {
-		predicates = append(predicates, instance.TenantIDNEQ(*i.TenantIDNEQ))
-	}
-	if len(i.TenantIDIn) > 0 {
-		predicates = append(predicates, instance.TenantIDIn(i.TenantIDIn...))
-	}
-	if len(i.TenantIDNotIn) > 0 {
-		predicates = append(predicates, instance.TenantIDNotIn(i.TenantIDNotIn...))
-	}
-	if i.TenantIDGT != nil {
-		predicates = append(predicates, instance.TenantIDGT(*i.TenantIDGT))
-	}
-	if i.TenantIDGTE != nil {
-		predicates = append(predicates, instance.TenantIDGTE(*i.TenantIDGTE))
-	}
-	if i.TenantIDLT != nil {
-		predicates = append(predicates, instance.TenantIDLT(*i.TenantIDLT))
-	}
-	if i.TenantIDLTE != nil {
-		predicates = append(predicates, instance.TenantIDLTE(*i.TenantIDLTE))
-	}
-	if i.TenantIDContains != nil {
-		predicates = append(predicates, instance.TenantIDContains(*i.TenantIDContains))
-	}
-	if i.TenantIDHasPrefix != nil {
-		predicates = append(predicates, instance.TenantIDHasPrefix(*i.TenantIDHasPrefix))
-	}
-	if i.TenantIDHasSuffix != nil {
-		predicates = append(predicates, instance.TenantIDHasSuffix(*i.TenantIDHasSuffix))
-	}
-	if i.TenantIDIsNil {
-		predicates = append(predicates, instance.TenantIDIsNil())
-	}
-	if i.TenantIDNotNil {
-		predicates = append(predicates, instance.TenantIDNotNil())
-	}
-	if i.TenantIDEqualFold != nil {
-		predicates = append(predicates, instance.TenantIDEqualFold(*i.TenantIDEqualFold))
-	}
-	if i.TenantIDContainsFold != nil {
-		predicates = append(predicates, instance.TenantIDContainsFold(*i.TenantIDContainsFold))
-	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, instance.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -410,45 +271,6 @@ func (i *InstanceWhereInput) P() (predicate.Instance, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, instance.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.InstanceProviderID != nil {
-		predicates = append(predicates, instance.InstanceProviderIDEQ(*i.InstanceProviderID))
-	}
-	if i.InstanceProviderIDNEQ != nil {
-		predicates = append(predicates, instance.InstanceProviderIDNEQ(*i.InstanceProviderIDNEQ))
-	}
-	if len(i.InstanceProviderIDIn) > 0 {
-		predicates = append(predicates, instance.InstanceProviderIDIn(i.InstanceProviderIDIn...))
-	}
-	if len(i.InstanceProviderIDNotIn) > 0 {
-		predicates = append(predicates, instance.InstanceProviderIDNotIn(i.InstanceProviderIDNotIn...))
-	}
-	if i.InstanceProviderIDGT != nil {
-		predicates = append(predicates, instance.InstanceProviderIDGT(*i.InstanceProviderIDGT))
-	}
-	if i.InstanceProviderIDGTE != nil {
-		predicates = append(predicates, instance.InstanceProviderIDGTE(*i.InstanceProviderIDGTE))
-	}
-	if i.InstanceProviderIDLT != nil {
-		predicates = append(predicates, instance.InstanceProviderIDLT(*i.InstanceProviderIDLT))
-	}
-	if i.InstanceProviderIDLTE != nil {
-		predicates = append(predicates, instance.InstanceProviderIDLTE(*i.InstanceProviderIDLTE))
-	}
-	if i.InstanceProviderIDContains != nil {
-		predicates = append(predicates, instance.InstanceProviderIDContains(*i.InstanceProviderIDContains))
-	}
-	if i.InstanceProviderIDHasPrefix != nil {
-		predicates = append(predicates, instance.InstanceProviderIDHasPrefix(*i.InstanceProviderIDHasPrefix))
-	}
-	if i.InstanceProviderIDHasSuffix != nil {
-		predicates = append(predicates, instance.InstanceProviderIDHasSuffix(*i.InstanceProviderIDHasSuffix))
-	}
-	if i.InstanceProviderIDEqualFold != nil {
-		predicates = append(predicates, instance.InstanceProviderIDEqualFold(*i.InstanceProviderIDEqualFold))
-	}
-	if i.InstanceProviderIDContainsFold != nil {
-		predicates = append(predicates, instance.InstanceProviderIDContainsFold(*i.InstanceProviderIDContainsFold))
-	}
 
 	if i.HasInstanceProvider != nil {
 		p := instance.HasInstanceProvider()
@@ -504,14 +326,14 @@ type InstanceMetadataWhereInput struct {
 	And        []*InstanceMetadataWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *idx.PrefixedID  `json:"id,omitempty"`
-	IDNEQ   *idx.PrefixedID  `json:"idNEQ,omitempty"`
-	IDIn    []idx.PrefixedID `json:"idIn,omitempty"`
-	IDNotIn []idx.PrefixedID `json:"idNotIn,omitempty"`
-	IDGT    *idx.PrefixedID  `json:"idGT,omitempty"`
-	IDGTE   *idx.PrefixedID  `json:"idGTE,omitempty"`
-	IDLT    *idx.PrefixedID  `json:"idLT,omitempty"`
-	IDLTE   *idx.PrefixedID  `json:"idLTE,omitempty"`
+	ID      *gidx.PrefixedID  `json:"id,omitempty"`
+	IDNEQ   *gidx.PrefixedID  `json:"idNEQ,omitempty"`
+	IDIn    []gidx.PrefixedID `json:"idIn,omitempty"`
+	IDNotIn []gidx.PrefixedID `json:"idNotIn,omitempty"`
+	IDGT    *gidx.PrefixedID  `json:"idGT,omitempty"`
+	IDGTE   *gidx.PrefixedID  `json:"idGTE,omitempty"`
+	IDLT    *gidx.PrefixedID  `json:"idLT,omitempty"`
+	IDLTE   *gidx.PrefixedID  `json:"idLTE,omitempty"`
 
 	// "namespace" field predicates.
 	Namespace             *string  `json:"namespace,omitempty"`
@@ -549,19 +371,19 @@ type InstanceMetadataWhereInput struct {
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
 	// "instance_id" field predicates.
-	InstanceID             *idx.PrefixedID  `json:"instanceID,omitempty"`
-	InstanceIDNEQ          *idx.PrefixedID  `json:"instanceIDNEQ,omitempty"`
-	InstanceIDIn           []idx.PrefixedID `json:"instanceIDIn,omitempty"`
-	InstanceIDNotIn        []idx.PrefixedID `json:"instanceIDNotIn,omitempty"`
-	InstanceIDGT           *idx.PrefixedID  `json:"instanceIDGT,omitempty"`
-	InstanceIDGTE          *idx.PrefixedID  `json:"instanceIDGTE,omitempty"`
-	InstanceIDLT           *idx.PrefixedID  `json:"instanceIDLT,omitempty"`
-	InstanceIDLTE          *idx.PrefixedID  `json:"instanceIDLTE,omitempty"`
-	InstanceIDContains     *idx.PrefixedID  `json:"instanceIDContains,omitempty"`
-	InstanceIDHasPrefix    *idx.PrefixedID  `json:"instanceIDHasPrefix,omitempty"`
-	InstanceIDHasSuffix    *idx.PrefixedID  `json:"instanceIDHasSuffix,omitempty"`
-	InstanceIDEqualFold    *idx.PrefixedID  `json:"instanceIDEqualFold,omitempty"`
-	InstanceIDContainsFold *idx.PrefixedID  `json:"instanceIDContainsFold,omitempty"`
+	InstanceID             *gidx.PrefixedID  `json:"instanceID,omitempty"`
+	InstanceIDNEQ          *gidx.PrefixedID  `json:"instanceIDNEQ,omitempty"`
+	InstanceIDIn           []gidx.PrefixedID `json:"instanceIDIn,omitempty"`
+	InstanceIDNotIn        []gidx.PrefixedID `json:"instanceIDNotIn,omitempty"`
+	InstanceIDGT           *gidx.PrefixedID  `json:"instanceIDGT,omitempty"`
+	InstanceIDGTE          *gidx.PrefixedID  `json:"instanceIDGTE,omitempty"`
+	InstanceIDLT           *gidx.PrefixedID  `json:"instanceIDLT,omitempty"`
+	InstanceIDLTE          *gidx.PrefixedID  `json:"instanceIDLTE,omitempty"`
+	InstanceIDContains     *gidx.PrefixedID  `json:"instanceIDContains,omitempty"`
+	InstanceIDHasPrefix    *gidx.PrefixedID  `json:"instanceIDHasPrefix,omitempty"`
+	InstanceIDHasSuffix    *gidx.PrefixedID  `json:"instanceIDHasSuffix,omitempty"`
+	InstanceIDEqualFold    *gidx.PrefixedID  `json:"instanceIDEqualFold,omitempty"`
+	InstanceIDContainsFold *gidx.PrefixedID  `json:"instanceIDContainsFold,omitempty"`
 
 	// "instance" edge predicates.
 	HasInstance     *bool                 `json:"hasInstance,omitempty"`
@@ -826,29 +648,14 @@ type InstanceProviderWhereInput struct {
 	And        []*InstanceProviderWhereInput `json:"and,omitempty"`
 
 	// "id" field predicates.
-	ID      *idx.PrefixedID  `json:"id,omitempty"`
-	IDNEQ   *idx.PrefixedID  `json:"idNEQ,omitempty"`
-	IDIn    []idx.PrefixedID `json:"idIn,omitempty"`
-	IDNotIn []idx.PrefixedID `json:"idNotIn,omitempty"`
-	IDGT    *idx.PrefixedID  `json:"idGT,omitempty"`
-	IDGTE   *idx.PrefixedID  `json:"idGTE,omitempty"`
-	IDLT    *idx.PrefixedID  `json:"idLT,omitempty"`
-	IDLTE   *idx.PrefixedID  `json:"idLTE,omitempty"`
-
-	// "name" field predicates.
-	Name             *string  `json:"name,omitempty"`
-	NameNEQ          *string  `json:"nameNEQ,omitempty"`
-	NameIn           []string `json:"nameIn,omitempty"`
-	NameNotIn        []string `json:"nameNotIn,omitempty"`
-	NameGT           *string  `json:"nameGT,omitempty"`
-	NameGTE          *string  `json:"nameGTE,omitempty"`
-	NameLT           *string  `json:"nameLT,omitempty"`
-	NameLTE          *string  `json:"nameLTE,omitempty"`
-	NameContains     *string  `json:"nameContains,omitempty"`
-	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
-	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
-	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
-	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+	ID      *gidx.PrefixedID  `json:"id,omitempty"`
+	IDNEQ   *gidx.PrefixedID  `json:"idNEQ,omitempty"`
+	IDIn    []gidx.PrefixedID `json:"idIn,omitempty"`
+	IDNotIn []gidx.PrefixedID `json:"idNotIn,omitempty"`
+	IDGT    *gidx.PrefixedID  `json:"idGT,omitempty"`
+	IDGTE   *gidx.PrefixedID  `json:"idGTE,omitempty"`
+	IDLT    *gidx.PrefixedID  `json:"idLT,omitempty"`
+	IDLTE   *gidx.PrefixedID  `json:"idLTE,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -869,6 +676,21 @@ type InstanceProviderWhereInput struct {
 	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
 	// "instances" edge predicates.
 	HasInstances     *bool                 `json:"hasInstances,omitempty"`
@@ -970,45 +792,6 @@ func (i *InstanceProviderWhereInput) P() (predicate.InstanceProvider, error) {
 	if i.IDLTE != nil {
 		predicates = append(predicates, instanceprovider.IDLTE(*i.IDLTE))
 	}
-	if i.Name != nil {
-		predicates = append(predicates, instanceprovider.NameEQ(*i.Name))
-	}
-	if i.NameNEQ != nil {
-		predicates = append(predicates, instanceprovider.NameNEQ(*i.NameNEQ))
-	}
-	if len(i.NameIn) > 0 {
-		predicates = append(predicates, instanceprovider.NameIn(i.NameIn...))
-	}
-	if len(i.NameNotIn) > 0 {
-		predicates = append(predicates, instanceprovider.NameNotIn(i.NameNotIn...))
-	}
-	if i.NameGT != nil {
-		predicates = append(predicates, instanceprovider.NameGT(*i.NameGT))
-	}
-	if i.NameGTE != nil {
-		predicates = append(predicates, instanceprovider.NameGTE(*i.NameGTE))
-	}
-	if i.NameLT != nil {
-		predicates = append(predicates, instanceprovider.NameLT(*i.NameLT))
-	}
-	if i.NameLTE != nil {
-		predicates = append(predicates, instanceprovider.NameLTE(*i.NameLTE))
-	}
-	if i.NameContains != nil {
-		predicates = append(predicates, instanceprovider.NameContains(*i.NameContains))
-	}
-	if i.NameHasPrefix != nil {
-		predicates = append(predicates, instanceprovider.NameHasPrefix(*i.NameHasPrefix))
-	}
-	if i.NameHasSuffix != nil {
-		predicates = append(predicates, instanceprovider.NameHasSuffix(*i.NameHasSuffix))
-	}
-	if i.NameEqualFold != nil {
-		predicates = append(predicates, instanceprovider.NameEqualFold(*i.NameEqualFold))
-	}
-	if i.NameContainsFold != nil {
-		predicates = append(predicates, instanceprovider.NameContainsFold(*i.NameContainsFold))
-	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, instanceprovider.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -1056,6 +839,45 @@ func (i *InstanceProviderWhereInput) P() (predicate.InstanceProvider, error) {
 	}
 	if i.UpdatedAtLTE != nil {
 		predicates = append(predicates, instanceprovider.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, instanceprovider.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, instanceprovider.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, instanceprovider.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, instanceprovider.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, instanceprovider.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, instanceprovider.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, instanceprovider.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, instanceprovider.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, instanceprovider.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, instanceprovider.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, instanceprovider.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, instanceprovider.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, instanceprovider.NameContainsFold(*i.NameContainsFold))
 	}
 
 	if i.HasInstances != nil {

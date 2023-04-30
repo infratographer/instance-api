@@ -6,37 +6,35 @@ package graphapi
 
 import (
 	"context"
-	"fmt"
 
-	ent "go.infratographer.com/instance-api/internal/ent/generated"
+	"go.infratographer.com/instance-api/internal/ent/generated"
 	graphapigen "go.infratographer.com/instance-api/internal/graphapi/generated"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // FindInstanceByID is the resolver for the findInstanceByID field.
-func (r *entityResolver) FindInstanceByID(ctx context.Context, id idx.PrefixedID) (*ent.Instance, error) {
-	fmt.Printf("calling findInstanceByID with: %+v\n", id)
+func (r *entityResolver) FindInstanceByID(ctx context.Context, id gidx.PrefixedID) (*generated.Instance, error) {
 	return r.client.Instance.Get(ctx, id)
 }
 
 // FindInstanceMetadataByID is the resolver for the findInstanceMetadataByID field.
-func (r *entityResolver) FindInstanceMetadataByID(ctx context.Context, id idx.PrefixedID) (*ent.InstanceMetadata, error) {
+func (r *entityResolver) FindInstanceMetadataByID(ctx context.Context, id gidx.PrefixedID) (*generated.InstanceMetadata, error) {
 	return r.client.InstanceMetadata.Get(ctx, id)
 }
 
 // FindInstanceProviderByID is the resolver for the findInstanceProviderByID field.
-func (r *entityResolver) FindInstanceProviderByID(ctx context.Context, id idx.PrefixedID) (*ent.InstanceProvider, error) {
+func (r *entityResolver) FindInstanceProviderByID(ctx context.Context, id gidx.PrefixedID) (*generated.InstanceProvider, error) {
 	return r.client.InstanceProvider.Get(ctx, id)
 }
 
 // FindLocationByID is the resolver for the findLocationByID field.
-func (r *entityResolver) FindLocationByID(ctx context.Context, id idx.PrefixedID) (*graphapigen.Location, error) {
-	panic(fmt.Errorf("not implemented: FindLocationByID - findLocationByID"))
+func (r *entityResolver) FindLocationByID(ctx context.Context, id gidx.PrefixedID) (*graphapigen.Location, error) {
+	return &graphapigen.Location{ID: id}, nil
 }
 
 // FindTenantByID is the resolver for the findTenantByID field.
-func (r *entityResolver) FindTenantByID(ctx context.Context, id idx.PrefixedID) (*graphapigen.Tenant, error) {
-	panic(fmt.Errorf("not implemented: FindTenantByID - findTenantByID"))
+func (r *entityResolver) FindTenantByID(ctx context.Context, id gidx.PrefixedID) (*graphapigen.Tenant, error) {
+	return &graphapigen.Tenant{ID: id}, nil
 }
 
 // Entity returns graphapigen.EntityResolver implementation.

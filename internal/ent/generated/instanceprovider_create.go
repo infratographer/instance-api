@@ -26,7 +26,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceProviderCreate is the builder for creating a InstanceProvider entity.
@@ -34,12 +34,6 @@ type InstanceProviderCreate struct {
 	config
 	mutation *InstanceProviderMutation
 	hooks    []Hook
-}
-
-// SetName sets the "name" field.
-func (ipc *InstanceProviderCreate) SetName(s string) *InstanceProviderCreate {
-	ipc.mutation.SetName(s)
-	return ipc
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -70,29 +64,41 @@ func (ipc *InstanceProviderCreate) SetNillableUpdatedAt(t *time.Time) *InstanceP
 	return ipc
 }
 
+// SetName sets the "name" field.
+func (ipc *InstanceProviderCreate) SetName(s string) *InstanceProviderCreate {
+	ipc.mutation.SetName(s)
+	return ipc
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (ipc *InstanceProviderCreate) SetTenantID(gi gidx.PrefixedID) *InstanceProviderCreate {
+	ipc.mutation.SetTenantID(gi)
+	return ipc
+}
+
 // SetID sets the "id" field.
-func (ipc *InstanceProviderCreate) SetID(ii idx.PrefixedID) *InstanceProviderCreate {
-	ipc.mutation.SetID(ii)
+func (ipc *InstanceProviderCreate) SetID(gi gidx.PrefixedID) *InstanceProviderCreate {
+	ipc.mutation.SetID(gi)
 	return ipc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ipc *InstanceProviderCreate) SetNillableID(ii *idx.PrefixedID) *InstanceProviderCreate {
-	if ii != nil {
-		ipc.SetID(*ii)
+func (ipc *InstanceProviderCreate) SetNillableID(gi *gidx.PrefixedID) *InstanceProviderCreate {
+	if gi != nil {
+		ipc.SetID(*gi)
 	}
 	return ipc
 }
 
 // AddInstanceIDs adds the "instances" edge to the Instance entity by IDs.
-func (ipc *InstanceProviderCreate) AddInstanceIDs(ids ...idx.PrefixedID) *InstanceProviderCreate {
+func (ipc *InstanceProviderCreate) AddInstanceIDs(ids ...gidx.PrefixedID) *InstanceProviderCreate {
 	ipc.mutation.AddInstanceIDs(ids...)
 	return ipc
 }
 
 // AddInstances adds the "instances" edges to the Instance entity.
 func (ipc *InstanceProviderCreate) AddInstances(i ...*Instance) *InstanceProviderCreate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -150,6 +156,12 @@ func (ipc *InstanceProviderCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ipc *InstanceProviderCreate) check() error {
+	if _, ok := ipc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "InstanceProvider.created_at"`)}
+	}
+	if _, ok := ipc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`generated: missing required field "InstanceProvider.updated_at"`)}
+	}
 	if _, ok := ipc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`generated: missing required field "InstanceProvider.name"`)}
 	}
@@ -158,11 +170,8 @@ func (ipc *InstanceProviderCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`generated: validator failed for field "InstanceProvider.name": %w`, err)}
 		}
 	}
-	if _, ok := ipc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "InstanceProvider.created_at"`)}
-	}
-	if _, ok := ipc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`generated: missing required field "InstanceProvider.updated_at"`)}
+	if _, ok := ipc.mutation.TenantID(); !ok {
+		return &ValidationError{Name: "tenant_id", err: errors.New(`generated: missing required field "InstanceProvider.tenant_id"`)}
 	}
 	return nil
 }
@@ -179,7 +188,7 @@ func (ipc *InstanceProviderCreate) sqlSave(ctx context.Context) (*InstanceProvid
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*idx.PrefixedID); ok {
+		if id, ok := _spec.ID.Value.(*gidx.PrefixedID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -199,10 +208,6 @@ func (ipc *InstanceProviderCreate) createSpec() (*InstanceProvider, *sqlgraph.Cr
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := ipc.mutation.Name(); ok {
-		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
 	if value, ok := ipc.mutation.CreatedAt(); ok {
 		_spec.SetField(instanceprovider.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -210,6 +215,14 @@ func (ipc *InstanceProviderCreate) createSpec() (*InstanceProvider, *sqlgraph.Cr
 	if value, ok := ipc.mutation.UpdatedAt(); ok {
 		_spec.SetField(instanceprovider.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := ipc.mutation.Name(); ok {
+		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := ipc.mutation.TenantID(); ok {
+		_spec.SetField(instanceprovider.FieldTenantID, field.TypeString, value)
+		_node.TenantID = value
 	}
 	if nodes := ipc.mutation.InstancesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

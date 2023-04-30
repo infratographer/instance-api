@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -93,8 +93,8 @@ func (i *InstanceQuery) collectField(ctx context.Context, opCtx *graphql.Operati
 							ids[i] = nodes[i].ID
 						}
 						var v []struct {
-							NodeID idx.PrefixedID `sql:"instance_id"`
-							Count  int            `sql:"count"`
+							NodeID gidx.PrefixedID `sql:"instance_id"`
+							Count  int             `sql:"count"`
 						}
 						query.Where(func(s *sql.Selector) {
 							s.Where(sql.InValues(s.C(instance.MetadataColumn), ids...))
@@ -102,7 +102,7 @@ func (i *InstanceQuery) collectField(ctx context.Context, opCtx *graphql.Operati
 						if err := query.GroupBy(instance.MetadataColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
 							return err
 						}
-						m := make(map[idx.PrefixedID]int, len(v))
+						m := make(map[gidx.PrefixedID]int, len(v))
 						for i := range v {
 							m[v[i].NodeID] = v[i].Count
 						}
@@ -149,16 +149,6 @@ func (i *InstanceQuery) collectField(ctx context.Context, opCtx *graphql.Operati
 			i.WithNamedMetadata(alias, func(wq *InstanceMetadataQuery) {
 				*wq = *query
 			})
-		case "locationID":
-			if _, ok := fieldSeen[instance.FieldLocationID]; !ok {
-				selectedFields = append(selectedFields, instance.FieldLocationID)
-				fieldSeen[instance.FieldLocationID] = struct{}{}
-			}
-		case "tenantID":
-			if _, ok := fieldSeen[instance.FieldTenantID]; !ok {
-				selectedFields = append(selectedFields, instance.FieldTenantID)
-				fieldSeen[instance.FieldTenantID] = struct{}{}
-			}
 		case "createdAt":
 			if _, ok := fieldSeen[instance.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, instance.FieldCreatedAt)
@@ -173,6 +163,16 @@ func (i *InstanceQuery) collectField(ctx context.Context, opCtx *graphql.Operati
 			if _, ok := fieldSeen[instance.FieldName]; !ok {
 				selectedFields = append(selectedFields, instance.FieldName)
 				fieldSeen[instance.FieldName] = struct{}{}
+			}
+		case "tenantID":
+			if _, ok := fieldSeen[instance.FieldTenantID]; !ok {
+				selectedFields = append(selectedFields, instance.FieldTenantID)
+				fieldSeen[instance.FieldTenantID] = struct{}{}
+			}
+		case "locationID":
+			if _, ok := fieldSeen[instance.FieldLocationID]; !ok {
+				selectedFields = append(selectedFields, instance.FieldLocationID)
+				fieldSeen[instance.FieldLocationID] = struct{}{}
 			}
 		case "instanceProviderID":
 			if _, ok := fieldSeen[instance.FieldInstanceProviderID]; !ok {
@@ -414,8 +414,8 @@ func (ip *InstanceProviderQuery) collectField(ctx context.Context, opCtx *graphq
 							ids[i] = nodes[i].ID
 						}
 						var v []struct {
-							NodeID idx.PrefixedID `sql:"instance_provider_id"`
-							Count  int            `sql:"count"`
+							NodeID gidx.PrefixedID `sql:"instance_provider_id"`
+							Count  int             `sql:"count"`
 						}
 						query.Where(func(s *sql.Selector) {
 							s.Where(sql.InValues(s.C(instanceprovider.InstancesColumn), ids...))
@@ -423,7 +423,7 @@ func (ip *InstanceProviderQuery) collectField(ctx context.Context, opCtx *graphq
 						if err := query.GroupBy(instanceprovider.InstancesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
 							return err
 						}
-						m := make(map[idx.PrefixedID]int, len(v))
+						m := make(map[gidx.PrefixedID]int, len(v))
 						for i := range v {
 							m[v[i].NodeID] = v[i].Count
 						}
@@ -470,11 +470,6 @@ func (ip *InstanceProviderQuery) collectField(ctx context.Context, opCtx *graphq
 			ip.WithNamedInstances(alias, func(wq *InstanceQuery) {
 				*wq = *query
 			})
-		case "name":
-			if _, ok := fieldSeen[instanceprovider.FieldName]; !ok {
-				selectedFields = append(selectedFields, instanceprovider.FieldName)
-				fieldSeen[instanceprovider.FieldName] = struct{}{}
-			}
 		case "createdAt":
 			if _, ok := fieldSeen[instanceprovider.FieldCreatedAt]; !ok {
 				selectedFields = append(selectedFields, instanceprovider.FieldCreatedAt)
@@ -484,6 +479,16 @@ func (ip *InstanceProviderQuery) collectField(ctx context.Context, opCtx *graphq
 			if _, ok := fieldSeen[instanceprovider.FieldUpdatedAt]; !ok {
 				selectedFields = append(selectedFields, instanceprovider.FieldUpdatedAt)
 				fieldSeen[instanceprovider.FieldUpdatedAt] = struct{}{}
+			}
+		case "name":
+			if _, ok := fieldSeen[instanceprovider.FieldName]; !ok {
+				selectedFields = append(selectedFields, instanceprovider.FieldName)
+				fieldSeen[instanceprovider.FieldName] = struct{}{}
+			}
+		case "tenantID":
+			if _, ok := fieldSeen[instanceprovider.FieldTenantID]; !ok {
+				selectedFields = append(selectedFields, instanceprovider.FieldTenantID)
+				fieldSeen[instanceprovider.FieldTenantID] = struct{}{}
 			}
 		case "id":
 		case "__typename":

@@ -26,14 +26,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceMetadata is the model entity for the InstanceMetadata schema.
 type InstanceMetadata struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID idx.PrefixedID `json:"id,omitempty"`
+	ID gidx.PrefixedID `json:"id,omitempty"`
 	// Namespace holds the value of the "namespace" field.
 	Namespace string `json:"namespace,omitempty"`
 	// Data holds the value of the "data" field.
@@ -43,7 +43,7 @@ type InstanceMetadata struct {
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// InstanceID holds the value of the "instance_id" field.
-	InstanceID idx.PrefixedID `json:"instance_id,omitempty"`
+	InstanceID gidx.PrefixedID `json:"instance_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InstanceMetadataQuery when eager-loading is set.
 	Edges        InstanceMetadataEdges `json:"edges"`
@@ -82,7 +82,7 @@ func (*InstanceMetadata) scanValues(columns []string) ([]any, error) {
 		case instancemetadata.FieldData:
 			values[i] = new([]byte)
 		case instancemetadata.FieldID, instancemetadata.FieldInstanceID:
-			values[i] = new(idx.PrefixedID)
+			values[i] = new(gidx.PrefixedID)
 		case instancemetadata.FieldNamespace:
 			values[i] = new(sql.NullString)
 		case instancemetadata.FieldCreatedAt, instancemetadata.FieldUpdatedAt:
@@ -103,7 +103,7 @@ func (im *InstanceMetadata) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case instancemetadata.FieldID:
-			if value, ok := values[i].(*idx.PrefixedID); !ok {
+			if value, ok := values[i].(*gidx.PrefixedID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				im.ID = *value
@@ -135,7 +135,7 @@ func (im *InstanceMetadata) assignValues(columns []string, values []any) error {
 				im.UpdatedAt = value.Time
 			}
 		case instancemetadata.FieldInstanceID:
-			if value, ok := values[i].(*idx.PrefixedID); !ok {
+			if value, ok := values[i].(*gidx.PrefixedID); !ok {
 				return fmt.Errorf("unexpected type %T for field instance_id", values[i])
 			} else if value != nil {
 				im.InstanceID = *value

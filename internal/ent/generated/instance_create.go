@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceCreate is the builder for creating a Instance entity.
@@ -35,34 +35,6 @@ type InstanceCreate struct {
 	config
 	mutation *InstanceMutation
 	hooks    []Hook
-}
-
-// SetLocationID sets the "location_id" field.
-func (ic *InstanceCreate) SetLocationID(ii idx.PrefixedID) *InstanceCreate {
-	ic.mutation.SetLocationID(ii)
-	return ic
-}
-
-// SetNillableLocationID sets the "location_id" field if the given value is not nil.
-func (ic *InstanceCreate) SetNillableLocationID(ii *idx.PrefixedID) *InstanceCreate {
-	if ii != nil {
-		ic.SetLocationID(*ii)
-	}
-	return ic
-}
-
-// SetTenantID sets the "tenant_id" field.
-func (ic *InstanceCreate) SetTenantID(ii idx.PrefixedID) *InstanceCreate {
-	ic.mutation.SetTenantID(ii)
-	return ic
-}
-
-// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
-func (ic *InstanceCreate) SetNillableTenantID(ii *idx.PrefixedID) *InstanceCreate {
-	if ii != nil {
-		ic.SetTenantID(*ii)
-	}
-	return ic
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -99,22 +71,34 @@ func (ic *InstanceCreate) SetName(s string) *InstanceCreate {
 	return ic
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (ic *InstanceCreate) SetTenantID(gi gidx.PrefixedID) *InstanceCreate {
+	ic.mutation.SetTenantID(gi)
+	return ic
+}
+
+// SetLocationID sets the "location_id" field.
+func (ic *InstanceCreate) SetLocationID(gi gidx.PrefixedID) *InstanceCreate {
+	ic.mutation.SetLocationID(gi)
+	return ic
+}
+
 // SetInstanceProviderID sets the "instance_provider_id" field.
-func (ic *InstanceCreate) SetInstanceProviderID(ii idx.PrefixedID) *InstanceCreate {
-	ic.mutation.SetInstanceProviderID(ii)
+func (ic *InstanceCreate) SetInstanceProviderID(gi gidx.PrefixedID) *InstanceCreate {
+	ic.mutation.SetInstanceProviderID(gi)
 	return ic
 }
 
 // SetID sets the "id" field.
-func (ic *InstanceCreate) SetID(ii idx.PrefixedID) *InstanceCreate {
-	ic.mutation.SetID(ii)
+func (ic *InstanceCreate) SetID(gi gidx.PrefixedID) *InstanceCreate {
+	ic.mutation.SetID(gi)
 	return ic
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ic *InstanceCreate) SetNillableID(ii *idx.PrefixedID) *InstanceCreate {
-	if ii != nil {
-		ic.SetID(*ii)
+func (ic *InstanceCreate) SetNillableID(gi *gidx.PrefixedID) *InstanceCreate {
+	if gi != nil {
+		ic.SetID(*gi)
 	}
 	return ic
 }
@@ -125,14 +109,14 @@ func (ic *InstanceCreate) SetInstanceProvider(i *InstanceProvider) *InstanceCrea
 }
 
 // AddMetadatumIDs adds the "metadata" edge to the InstanceMetadata entity by IDs.
-func (ic *InstanceCreate) AddMetadatumIDs(ids ...idx.PrefixedID) *InstanceCreate {
+func (ic *InstanceCreate) AddMetadatumIDs(ids ...gidx.PrefixedID) *InstanceCreate {
 	ic.mutation.AddMetadatumIDs(ids...)
 	return ic
 }
 
 // AddMetadata adds the "metadata" edges to the InstanceMetadata entity.
 func (ic *InstanceCreate) AddMetadata(i ...*InstanceMetadata) *InstanceCreate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -190,16 +174,6 @@ func (ic *InstanceCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ic *InstanceCreate) check() error {
-	if v, ok := ic.mutation.LocationID(); ok {
-		if err := instance.LocationIDValidator(string(v)); err != nil {
-			return &ValidationError{Name: "location_id", err: fmt.Errorf(`generated: validator failed for field "Instance.location_id": %w`, err)}
-		}
-	}
-	if v, ok := ic.mutation.TenantID(); ok {
-		if err := instance.TenantIDValidator(string(v)); err != nil {
-			return &ValidationError{Name: "tenant_id", err: fmt.Errorf(`generated: validator failed for field "Instance.tenant_id": %w`, err)}
-		}
-	}
 	if _, ok := ic.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`generated: missing required field "Instance.created_at"`)}
 	}
@@ -213,6 +187,12 @@ func (ic *InstanceCreate) check() error {
 		if err := instance.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`generated: validator failed for field "Instance.name": %w`, err)}
 		}
+	}
+	if _, ok := ic.mutation.TenantID(); !ok {
+		return &ValidationError{Name: "tenant_id", err: errors.New(`generated: missing required field "Instance.tenant_id"`)}
+	}
+	if _, ok := ic.mutation.LocationID(); !ok {
+		return &ValidationError{Name: "location_id", err: errors.New(`generated: missing required field "Instance.location_id"`)}
 	}
 	if _, ok := ic.mutation.InstanceProviderID(); !ok {
 		return &ValidationError{Name: "instance_provider_id", err: errors.New(`generated: missing required field "Instance.instance_provider_id"`)}
@@ -235,7 +215,7 @@ func (ic *InstanceCreate) sqlSave(ctx context.Context) (*Instance, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*idx.PrefixedID); ok {
+		if id, ok := _spec.ID.Value.(*gidx.PrefixedID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err
@@ -255,14 +235,6 @@ func (ic *InstanceCreate) createSpec() (*Instance, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := ic.mutation.LocationID(); ok {
-		_spec.SetField(instance.FieldLocationID, field.TypeString, value)
-		_node.LocationID = value
-	}
-	if value, ok := ic.mutation.TenantID(); ok {
-		_spec.SetField(instance.FieldTenantID, field.TypeString, value)
-		_node.TenantID = value
-	}
 	if value, ok := ic.mutation.CreatedAt(); ok {
 		_spec.SetField(instance.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -274,6 +246,14 @@ func (ic *InstanceCreate) createSpec() (*Instance, *sqlgraph.CreateSpec) {
 	if value, ok := ic.mutation.Name(); ok {
 		_spec.SetField(instance.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := ic.mutation.TenantID(); ok {
+		_spec.SetField(instance.FieldTenantID, field.TypeString, value)
+		_node.TenantID = value
+	}
+	if value, ok := ic.mutation.LocationID(); ok {
+		_spec.SetField(instance.FieldLocationID, field.TypeString, value)
+		_node.LocationID = value
 	}
 	if nodes := ic.mutation.InstanceProviderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

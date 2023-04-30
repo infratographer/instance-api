@@ -20,8 +20,8 @@ import (
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"go.infratographer.com/instance-api/internal/ent/generated"
-	"go.infratographer.com/instance-api/xthings/gqltypes"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/entx"
+	"go.infratographer.com/x/gidx"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -44,9 +44,13 @@ type Config struct {
 type ResolverRoot interface {
 	Entity() EntityResolver
 	Instance() InstanceResolver
+	InstanceProvider() InstanceProviderResolver
 	Location() LocationResolver
+	Mutation() MutationResolver
 	Query() QueryResolver
 	Tenant() TenantResolver
+	CreateInstanceInput() CreateInstanceInputResolver
+	CreateInstanceProviderInput() CreateInstanceProviderInputResolver
 }
 
 type DirectiveRoot struct {
@@ -54,11 +58,11 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Entity struct {
-		FindInstanceByID         func(childComplexity int, id idx.PrefixedID) int
-		FindInstanceMetadataByID func(childComplexity int, id idx.PrefixedID) int
-		FindInstanceProviderByID func(childComplexity int, id idx.PrefixedID) int
-		FindLocationByID         func(childComplexity int, id idx.PrefixedID) int
-		FindTenantByID           func(childComplexity int, id idx.PrefixedID) int
+		FindInstanceByID         func(childComplexity int, id gidx.PrefixedID) int
+		FindInstanceMetadataByID func(childComplexity int, id gidx.PrefixedID) int
+		FindInstanceProviderByID func(childComplexity int, id gidx.PrefixedID) int
+		FindLocationByID         func(childComplexity int, id gidx.PrefixedID) int
+		FindTenantByID           func(childComplexity int, id gidx.PrefixedID) int
 	}
 
 	Instance struct {
@@ -68,7 +72,7 @@ type ComplexityRoot struct {
 		InstanceProviderID func(childComplexity int) int
 		Location           func(childComplexity int) int
 		LocationID         func(childComplexity int) int
-		Metadata           func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) int
+		Metadata           func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) int
 		Name               func(childComplexity int) int
 		Tenant             func(childComplexity int) int
 		TenantID           func(childComplexity int) int
@@ -110,8 +114,10 @@ type ComplexityRoot struct {
 	InstanceProvider struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Instances func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
+		Instances func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
 		Name      func(childComplexity int) int
+		Tenant    func(childComplexity int) int
+		TenantID  func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 
@@ -128,7 +134,15 @@ type ComplexityRoot struct {
 
 	Location struct {
 		ID        func(childComplexity int) int
-		Instances func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
+		Instances func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
+	}
+
+	Mutation struct {
+		CreateInstance         func(childComplexity int, input generated.CreateInstanceInput) int
+		CreateInstanceProvider func(childComplexity int, input generated.CreateInstanceProviderInput) int
+		SetInstanceAnnotation  func(childComplexity int, instanceID gidx.PrefixedID, namespace string, data json.RawMessage) int
+		UpdateInstance         func(childComplexity int, input generated.UpdateInstanceInput) int
+		UpdateInstanceProvider func(childComplexity int, input generated.UpdateInstanceProviderInput) int
 	}
 
 	PageInfo struct {
@@ -139,16 +153,17 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		InstanceMetadataSlice func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) int
-		InstanceProviders     func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceProviderOrder, where *generated.InstanceProviderWhereInput) int
-		Instances             func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
+		InstanceMetadataSlice func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) int
+		InstanceProviders     func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceProviderOrder, where *generated.InstanceProviderWhereInput) int
+		Instances             func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
 		__resolve__service    func(childComplexity int) int
 		__resolve_entities    func(childComplexity int, representations []map[string]interface{}) int
 	}
 
 	Tenant struct {
-		ID        func(childComplexity int) int
-		Instances func(childComplexity int, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
+		ID                func(childComplexity int) int
+		InstanceProviders func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceProviderWhereInput) int
+		Instances         func(childComplexity int, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) int
 	}
 
 	_Service struct {
@@ -157,26 +172,49 @@ type ComplexityRoot struct {
 }
 
 type EntityResolver interface {
-	FindInstanceByID(ctx context.Context, id idx.PrefixedID) (*generated.Instance, error)
-	FindInstanceMetadataByID(ctx context.Context, id idx.PrefixedID) (*generated.InstanceMetadata, error)
-	FindInstanceProviderByID(ctx context.Context, id idx.PrefixedID) (*generated.InstanceProvider, error)
-	FindLocationByID(ctx context.Context, id idx.PrefixedID) (*Location, error)
-	FindTenantByID(ctx context.Context, id idx.PrefixedID) (*Tenant, error)
+	FindInstanceByID(ctx context.Context, id gidx.PrefixedID) (*generated.Instance, error)
+	FindInstanceMetadataByID(ctx context.Context, id gidx.PrefixedID) (*generated.InstanceMetadata, error)
+	FindInstanceProviderByID(ctx context.Context, id gidx.PrefixedID) (*generated.InstanceProvider, error)
+	FindLocationByID(ctx context.Context, id gidx.PrefixedID) (*Location, error)
+	FindTenantByID(ctx context.Context, id gidx.PrefixedID) (*Tenant, error)
 }
 type InstanceResolver interface {
+	TenantID(ctx context.Context, obj *generated.Instance) (string, error)
+	LocationID(ctx context.Context, obj *generated.Instance) (string, error)
+
 	Location(ctx context.Context, obj *generated.Instance) (*Location, error)
 	Tenant(ctx context.Context, obj *generated.Instance) (*Tenant, error)
 }
+type InstanceProviderResolver interface {
+	TenantID(ctx context.Context, obj *generated.InstanceProvider) (string, error)
+
+	Tenant(ctx context.Context, obj *generated.InstanceProvider) (*Tenant, error)
+}
 type LocationResolver interface {
-	Instances(ctx context.Context, obj *Location, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
+	Instances(ctx context.Context, obj *Location, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
+}
+type MutationResolver interface {
+	CreateInstance(ctx context.Context, input generated.CreateInstanceInput) (*generated.Instance, error)
+	UpdateInstance(ctx context.Context, input generated.UpdateInstanceInput) (*generated.Instance, error)
+	SetInstanceAnnotation(ctx context.Context, instanceID gidx.PrefixedID, namespace string, data json.RawMessage) (*generated.InstanceMetadata, error)
+	CreateInstanceProvider(ctx context.Context, input generated.CreateInstanceProviderInput) (*generated.InstanceProvider, error)
+	UpdateInstanceProvider(ctx context.Context, input generated.UpdateInstanceProviderInput) (*generated.InstanceProvider, error)
 }
 type QueryResolver interface {
-	Instances(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
-	InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) (*generated.InstanceMetadataConnection, error)
-	InstanceProviders(ctx context.Context, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceProviderOrder, where *generated.InstanceProviderWhereInput) (*generated.InstanceProviderConnection, error)
+	Instances(ctx context.Context, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
+	InstanceMetadataSlice(ctx context.Context, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceMetadataOrder, where *generated.InstanceMetadataWhereInput) (*generated.InstanceMetadataConnection, error)
+	InstanceProviders(ctx context.Context, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceProviderOrder, where *generated.InstanceProviderWhereInput) (*generated.InstanceProviderConnection, error)
 }
 type TenantResolver interface {
-	Instances(ctx context.Context, obj *Tenant, after *entgql.Cursor[idx.PrefixedID], first *int, before *entgql.Cursor[idx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
+	Instances(ctx context.Context, obj *Tenant, after *entgql.Cursor[gidx.PrefixedID], first *int, before *entgql.Cursor[gidx.PrefixedID], last *int, orderBy *generated.InstanceOrder, where *generated.InstanceWhereInput) (*generated.InstanceConnection, error)
+}
+
+type CreateInstanceInputResolver interface {
+	TenantID(ctx context.Context, obj *generated.CreateInstanceInput, data string) error
+	LocationID(ctx context.Context, obj *generated.CreateInstanceInput, data string) error
+}
+type CreateInstanceProviderInputResolver interface {
+	TenantID(ctx context.Context, obj *generated.CreateInstanceProviderInput, data string) error
 }
 
 type executableSchema struct {
@@ -204,7 +242,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Entity.FindInstanceByID(childComplexity, args["id"].(idx.PrefixedID)), true
+		return e.complexity.Entity.FindInstanceByID(childComplexity, args["id"].(gidx.PrefixedID)), true
 
 	case "Entity.findInstanceMetadataByID":
 		if e.complexity.Entity.FindInstanceMetadataByID == nil {
@@ -216,7 +254,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Entity.FindInstanceMetadataByID(childComplexity, args["id"].(idx.PrefixedID)), true
+		return e.complexity.Entity.FindInstanceMetadataByID(childComplexity, args["id"].(gidx.PrefixedID)), true
 
 	case "Entity.findInstanceProviderByID":
 		if e.complexity.Entity.FindInstanceProviderByID == nil {
@@ -228,7 +266,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Entity.FindInstanceProviderByID(childComplexity, args["id"].(idx.PrefixedID)), true
+		return e.complexity.Entity.FindInstanceProviderByID(childComplexity, args["id"].(gidx.PrefixedID)), true
 
 	case "Entity.findLocationByID":
 		if e.complexity.Entity.FindLocationByID == nil {
@@ -240,7 +278,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Entity.FindLocationByID(childComplexity, args["id"].(idx.PrefixedID)), true
+		return e.complexity.Entity.FindLocationByID(childComplexity, args["id"].(gidx.PrefixedID)), true
 
 	case "Entity.findTenantByID":
 		if e.complexity.Entity.FindTenantByID == nil {
@@ -252,7 +290,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Entity.FindTenantByID(childComplexity, args["id"].(idx.PrefixedID)), true
+		return e.complexity.Entity.FindTenantByID(childComplexity, args["id"].(gidx.PrefixedID)), true
 
 	case "Instance.createdAt":
 		if e.complexity.Instance.CreatedAt == nil {
@@ -306,7 +344,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Instance.Metadata(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceMetadataOrder), args["where"].(*generated.InstanceMetadataWhereInput)), true
+		return e.complexity.Instance.Metadata(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceMetadataOrder), args["where"].(*generated.InstanceMetadataWhereInput)), true
 
 	case "Instance.name":
 		if e.complexity.Instance.Name == nil {
@@ -479,7 +517,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.InstanceProvider.Instances(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
+		return e.complexity.InstanceProvider.Instances(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
 
 	case "InstanceProvider.name":
 		if e.complexity.InstanceProvider.Name == nil {
@@ -487,6 +525,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.InstanceProvider.Name(childComplexity), true
+
+	case "InstanceProvider.tenant":
+		if e.complexity.InstanceProvider.Tenant == nil {
+			break
+		}
+
+		return e.complexity.InstanceProvider.Tenant(childComplexity), true
+
+	case "InstanceProvider.tenantID":
+		if e.complexity.InstanceProvider.TenantID == nil {
+			break
+		}
+
+		return e.complexity.InstanceProvider.TenantID(childComplexity), true
 
 	case "InstanceProvider.updatedAt":
 		if e.complexity.InstanceProvider.UpdatedAt == nil {
@@ -547,7 +599,67 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Location.Instances(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
+		return e.complexity.Location.Instances(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
+
+	case "Mutation.createInstance":
+		if e.complexity.Mutation.CreateInstance == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createInstance_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateInstance(childComplexity, args["input"].(generated.CreateInstanceInput)), true
+
+	case "Mutation.createInstanceProvider":
+		if e.complexity.Mutation.CreateInstanceProvider == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createInstanceProvider_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateInstanceProvider(childComplexity, args["input"].(generated.CreateInstanceProviderInput)), true
+
+	case "Mutation.setInstanceAnnotation":
+		if e.complexity.Mutation.SetInstanceAnnotation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setInstanceAnnotation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetInstanceAnnotation(childComplexity, args["instanceID"].(gidx.PrefixedID), args["namespace"].(string), args["data"].(json.RawMessage)), true
+
+	case "Mutation.updateInstance":
+		if e.complexity.Mutation.UpdateInstance == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateInstance_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateInstance(childComplexity, args["input"].(generated.UpdateInstanceInput)), true
+
+	case "Mutation.updateInstanceProvider":
+		if e.complexity.Mutation.UpdateInstanceProvider == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateInstanceProvider_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateInstanceProvider(childComplexity, args["input"].(generated.UpdateInstanceProviderInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -587,7 +699,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.InstanceMetadataSlice(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceMetadataOrder), args["where"].(*generated.InstanceMetadataWhereInput)), true
+		return e.complexity.Query.InstanceMetadataSlice(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceMetadataOrder), args["where"].(*generated.InstanceMetadataWhereInput)), true
 
 	case "Query.instanceProviders":
 		if e.complexity.Query.InstanceProviders == nil {
@@ -599,7 +711,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.InstanceProviders(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceProviderOrder), args["where"].(*generated.InstanceProviderWhereInput)), true
+		return e.complexity.Query.InstanceProviders(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceProviderOrder), args["where"].(*generated.InstanceProviderWhereInput)), true
 
 	case "Query.instances":
 		if e.complexity.Query.Instances == nil {
@@ -611,7 +723,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Instances(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
+		return e.complexity.Query.Instances(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
 
 	case "Query._service":
 		if e.complexity.Query.__resolve__service == nil {
@@ -639,6 +751,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Tenant.ID(childComplexity), true
 
+	case "Tenant.instanceProviders":
+		if e.complexity.Tenant.InstanceProviders == nil {
+			break
+		}
+
+		args, err := ec.field_Tenant_instanceProviders_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Tenant.InstanceProviders(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceProviderWhereInput)), true
+
 	case "Tenant.instances":
 		if e.complexity.Tenant.Instances == nil {
 			break
@@ -649,7 +773,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Tenant.Instances(childComplexity, args["after"].(*entgql.Cursor[idx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[idx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
+		return e.complexity.Tenant.Instances(childComplexity, args["after"].(*entgql.Cursor[gidx.PrefixedID]), args["first"].(*int), args["before"].(*entgql.Cursor[gidx.PrefixedID]), args["last"].(*int), args["orderBy"].(*generated.InstanceOrder), args["where"].(*generated.InstanceWhereInput)), true
 
 	case "_Service.sdl":
 		if e.complexity._Service.SDL == nil {
@@ -667,7 +791,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateInstanceInput,
-		ec.unmarshalInputCreateInstanceMetadataInput,
 		ec.unmarshalInputCreateInstanceProviderInput,
 		ec.unmarshalInputInstanceMetadataOrder,
 		ec.unmarshalInputInstanceMetadataWhereInput,
@@ -675,6 +798,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputInstanceProviderOrder,
 		ec.unmarshalInputInstanceProviderWhereInput,
 		ec.unmarshalInputInstanceWhereInput,
+		ec.unmarshalInputUpdateInstanceInput,
+		ec.unmarshalInputUpdateInstanceMetadataInput,
+		ec.unmarshalInputUpdateInstanceProviderInput,
 	)
 	first := true
 
@@ -687,6 +813,21 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			first = false
 			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
 			data := ec._Query(ctx, rc.Operation.SelectionSet)
+			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
+	case ast.Mutation:
+		return func(ctx context.Context) *graphql.Response {
+			if !first {
+				return nil
+			}
+			first = false
+			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 
@@ -727,20 +868,11 @@ CreateInstanceInput is used for create Instance object.
 Input was generated by ent.
 """
 input CreateInstanceInput {
-  locationID: ID
-  tenantID: ID
   name: String!
+  tenantID: String!
+  locationID: String!
   instanceProviderID: ID!
   metadatumIDs: [ID!]
-}
-"""
-CreateInstanceMetadataInput is used for create InstanceMetadata object.
-Input was generated by ent.
-"""
-input CreateInstanceMetadataInput {
-  namespace: String!
-  data: JSON!
-  instanceID: ID!
 }
 """
 CreateInstanceProviderInput is used for create InstanceProvider object.
@@ -748,8 +880,7 @@ Input was generated by ent.
 """
 input CreateInstanceProviderInput {
   name: String!
-  createdAt: Time
-  updatedAt: Time
+  tenantID: String!
   instanceIDs: [ID!]
 }
 """
@@ -759,11 +890,11 @@ https://relay.dev/graphql/connections.htm#sec-Cursor
 scalar Cursor
 type Instance implements Node @key(fields: "id") {
   id: ID!
-  locationID: ID
-  tenantID: ID
   createdAt: Time!
   updatedAt: Time!
   name: String!
+  tenantID: String!
+  locationID: String!
   instanceProviderID: ID!
   instanceProvider: InstanceProvider!
   metadata(
@@ -785,8 +916,6 @@ type Instance implements Node @key(fields: "id") {
     """Filtering options for InstanceMetadataSlice returned from the connection."""
     where: InstanceMetadataWhereInput
   ): InstanceMetadataConnection!
-  location: Location!
-  tenant: Tenant!
 }
 """A connection to a list of items."""
 type InstanceConnection {
@@ -920,9 +1049,10 @@ enum InstanceOrderField {
 }
 type InstanceProvider implements Node @key(fields: "id") {
   id: ID!
-  name: String!
   createdAt: Time!
   updatedAt: Time!
+  name: String!
+  tenantID: String!
   instances(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -969,8 +1099,6 @@ input InstanceProviderOrder {
 """Properties by which InstanceProvider connections can be ordered."""
 enum InstanceProviderOrderField {
   NAME
-  CREATED_AT
-  UPDATED_AT
 }
 """
 InstanceProviderWhereInput is used for filtering InstanceProvider objects.
@@ -989,20 +1117,6 @@ input InstanceProviderWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  """name field predicates"""
-  name: String
-  nameNEQ: String
-  nameIn: [String!]
-  nameNotIn: [String!]
-  nameGT: String
-  nameGTE: String
-  nameLT: String
-  nameLTE: String
-  nameContains: String
-  nameHasPrefix: String
-  nameHasSuffix: String
-  nameEqualFold: String
-  nameContainsFold: String
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -1021,6 +1135,20 @@ input InstanceProviderWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
   """instances edge predicates"""
   hasInstances: Boolean
   hasInstancesWith: [InstanceWhereInput!]
@@ -1042,38 +1170,6 @@ input InstanceWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  """location_id field predicates"""
-  locationID: ID
-  locationIDNEQ: ID
-  locationIDIn: [ID!]
-  locationIDNotIn: [ID!]
-  locationIDGT: ID
-  locationIDGTE: ID
-  locationIDLT: ID
-  locationIDLTE: ID
-  locationIDContains: ID
-  locationIDHasPrefix: ID
-  locationIDHasSuffix: ID
-  locationIDIsNil: Boolean
-  locationIDNotNil: Boolean
-  locationIDEqualFold: ID
-  locationIDContainsFold: ID
-  """tenant_id field predicates"""
-  tenantID: ID
-  tenantIDNEQ: ID
-  tenantIDIn: [ID!]
-  tenantIDNotIn: [ID!]
-  tenantIDGT: ID
-  tenantIDGTE: ID
-  tenantIDLT: ID
-  tenantIDLTE: ID
-  tenantIDContains: ID
-  tenantIDHasPrefix: ID
-  tenantIDHasSuffix: ID
-  tenantIDIsNil: Boolean
-  tenantIDNotNil: Boolean
-  tenantIDEqualFold: ID
-  tenantIDContainsFold: ID
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -1106,20 +1202,6 @@ input InstanceWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  """instance_provider_id field predicates"""
-  instanceProviderID: ID
-  instanceProviderIDNEQ: ID
-  instanceProviderIDIn: [ID!]
-  instanceProviderIDNotIn: [ID!]
-  instanceProviderIDGT: ID
-  instanceProviderIDGTE: ID
-  instanceProviderIDLT: ID
-  instanceProviderIDLTE: ID
-  instanceProviderIDContains: ID
-  instanceProviderIDHasPrefix: ID
-  instanceProviderIDHasSuffix: ID
-  instanceProviderIDEqualFold: ID
-  instanceProviderIDContainsFold: ID
   """instance_provider edge predicates"""
   hasInstanceProvider: Boolean
   hasInstanceProviderWith: [InstanceProviderWhereInput!]
@@ -1129,28 +1211,6 @@ input InstanceWhereInput {
 }
 """A valid JSON string."""
 scalar JSON
-type Location @key(fields: "id") {
-  id: ID! @external
-  instances(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Instances returned from the connection."""
-    orderBy: InstanceOrder
-
-    """Filtering options for Instances returned from the connection."""
-    where: InstanceWhereInput
-  ): InstanceConnection!
-}
 """
 An object with an ID.
 Follows the [Relay Global Object Identification Specification](https://relay.dev/graphql/objectidentification.htm)
@@ -1239,7 +1299,49 @@ type Query {
     where: InstanceProviderWhereInput
   ): InstanceProviderConnection!
 }
-type Tenant @key(fields: "id") {
+"""The builtin Time type"""
+scalar Time
+"""
+UpdateInstanceInput is used for update Instance object.
+Input was generated by ent.
+"""
+input UpdateInstanceInput {
+  name: String
+  addMetadatumIDs: [ID!]
+  removeMetadatumIDs: [ID!]
+  clearMetadata: Boolean
+}
+"""The fields used to set an annotation on an Instance"""
+input UpdateInstanceMetadataInput {
+  namespace: String
+  data: JSON
+  appendData: JSON
+}
+"""
+UpdateInstanceProviderInput is used for update InstanceProvider object.
+Input was generated by ent.
+"""
+input UpdateInstanceProviderInput {
+  name: String
+  addInstanceIDs: [ID!]
+  removeInstanceIDs: [ID!]
+  clearInstances: Boolean
+}
+`, BuiltIn: false},
+	{Name: "../../../schema/instance.graphql", Input: `extend type Mutation {
+   createInstance(input: CreateInstanceInput!): Instance!
+   updateInstance(input: UpdateInstanceInput!): Instance!
+
+   setInstanceAnnotation(instanceID: ID!, namespace: String! data: JSON! ): InstanceMetadata!
+ }
+`, BuiltIn: false},
+	{Name: "../../../schema/instanceannotations.graphql", Input: ``, BuiltIn: false},
+	{Name: "../../../schema/instanceprovider.graphql", Input: `extend type Mutation {
+   createInstanceProvider(input: CreateInstanceProviderInput!): InstanceProvider!
+   updateInstanceProvider(input: UpdateInstanceProviderInput!): InstanceProvider!
+ }
+`, BuiltIn: false},
+	{Name: "../../../schema/location.graphql", Input: `extend type Location @key(fields: "id") {
   id: ID! @external
   instances(
     """Returns the elements in the list that come after the specified cursor."""
@@ -1261,8 +1363,61 @@ type Tenant @key(fields: "id") {
     where: InstanceWhereInput
   ): InstanceConnection!
 }
-"""The builtin Time type"""
-scalar Time
+
+extend type Instance {
+  location: Location!
+}
+`, BuiltIn: false},
+	{Name: "../../../schema/tenant.graphql", Input: `extend type Tenant @key(fields: "id") {
+  id: ID! @external
+  instances(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Instances returned from the connection."""
+    orderBy: InstanceOrder
+
+    """Filtering options for Instances returned from the connection."""
+    where: InstanceWhereInput
+  ): InstanceConnection!
+
+  instanceProviders(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Instances returned from the connection."""
+    orderBy: InstanceOrder
+
+    """Filtering options for Instances returned from the connection."""
+    where: InstanceProviderWhereInput
+  ): InstanceProviderConnection!
+}
+
+extend type Instance {
+  tenant: Tenant!
+}
+
+extend type InstanceProvider {
+  tenant: Tenant!
+}
 `, BuiltIn: false},
 	{Name: "../../../federation/directives.graphql", Input: `
 	scalar _Any
@@ -1312,10 +1467,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Entity_findInstanceByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 idx.PrefixedID
+	var arg0 gidx.PrefixedID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1327,10 +1482,10 @@ func (ec *executionContext) field_Entity_findInstanceByID_args(ctx context.Conte
 func (ec *executionContext) field_Entity_findInstanceMetadataByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 idx.PrefixedID
+	var arg0 gidx.PrefixedID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1342,10 +1497,10 @@ func (ec *executionContext) field_Entity_findInstanceMetadataByID_args(ctx conte
 func (ec *executionContext) field_Entity_findInstanceProviderByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 idx.PrefixedID
+	var arg0 gidx.PrefixedID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1357,10 +1512,10 @@ func (ec *executionContext) field_Entity_findInstanceProviderByID_args(ctx conte
 func (ec *executionContext) field_Entity_findLocationByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 idx.PrefixedID
+	var arg0 gidx.PrefixedID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1372,10 +1527,10 @@ func (ec *executionContext) field_Entity_findLocationByID_args(ctx context.Conte
 func (ec *executionContext) field_Entity_findTenantByID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 idx.PrefixedID
+	var arg0 gidx.PrefixedID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1387,7 +1542,7 @@ func (ec *executionContext) field_Entity_findTenantByID_args(ctx context.Context
 func (ec *executionContext) field_InstanceProvider_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1405,7 +1560,7 @@ func (ec *executionContext) field_InstanceProvider_instances_args(ctx context.Co
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1447,7 +1602,7 @@ func (ec *executionContext) field_InstanceProvider_instances_args(ctx context.Co
 func (ec *executionContext) field_Instance_metadata_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1465,7 +1620,7 @@ func (ec *executionContext) field_Instance_metadata_args(ctx context.Context, ra
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1507,7 +1662,7 @@ func (ec *executionContext) field_Instance_metadata_args(ctx context.Context, ra
 func (ec *executionContext) field_Location_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1525,7 +1680,7 @@ func (ec *executionContext) field_Location_instances_args(ctx context.Context, r
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1564,6 +1719,99 @@ func (ec *executionContext) field_Location_instances_args(ctx context.Context, r
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createInstanceProvider_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 generated.CreateInstanceProviderInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateInstanceProviderInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐCreateInstanceProviderInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createInstance_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 generated.CreateInstanceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateInstanceInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐCreateInstanceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_setInstanceAnnotation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 gidx.PrefixedID
+	if tmp, ok := rawArgs["instanceID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceID"))
+		arg0, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["instanceID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["namespace"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("namespace"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["namespace"] = arg1
+	var arg2 json.RawMessage
+	if tmp, ok := rawArgs["data"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+		arg2, err = ec.unmarshalNJSON2encodingᚋjsonᚐRawMessage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["data"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateInstanceProvider_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 generated.UpdateInstanceProviderInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateInstanceProviderInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐUpdateInstanceProviderInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateInstance_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 generated.UpdateInstanceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateInstanceInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐUpdateInstanceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1597,7 +1845,7 @@ func (ec *executionContext) field_Query__entities_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_instanceMetadataSlice_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1615,7 +1863,7 @@ func (ec *executionContext) field_Query_instanceMetadataSlice_args(ctx context.C
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1657,7 +1905,7 @@ func (ec *executionContext) field_Query_instanceMetadataSlice_args(ctx context.C
 func (ec *executionContext) field_Query_instanceProviders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1675,7 +1923,7 @@ func (ec *executionContext) field_Query_instanceProviders_args(ctx context.Conte
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1717,7 +1965,7 @@ func (ec *executionContext) field_Query_instanceProviders_args(ctx context.Conte
 func (ec *executionContext) field_Query_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1735,7 +1983,7 @@ func (ec *executionContext) field_Query_instances_args(ctx context.Context, rawA
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1774,10 +2022,10 @@ func (ec *executionContext) field_Query_instances_args(ctx context.Context, rawA
 	return args, nil
 }
 
-func (ec *executionContext) field_Tenant_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Tenant_instanceProviders_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *entgql.Cursor[idx.PrefixedID]
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["after"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
 		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1795,7 +2043,67 @@ func (ec *executionContext) field_Tenant_instances_args(ctx context.Context, raw
 		}
 	}
 	args["first"] = arg1
-	var arg2 *entgql.Cursor[idx.PrefixedID]
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *generated.InstanceOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOInstanceOrder2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *generated.InstanceProviderWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOInstanceProviderWhereInput2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceProviderWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Tenant_instances_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *entgql.Cursor[gidx.PrefixedID]
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *entgql.Cursor[gidx.PrefixedID]
 	if tmp, ok := rawArgs["before"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
 		arg2, err = ec.unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, tmp)
@@ -1886,7 +2194,7 @@ func (ec *executionContext) _Entity_findInstanceByID(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Entity().FindInstanceByID(rctx, fc.Args["id"].(idx.PrefixedID))
+		return ec.resolvers.Entity().FindInstanceByID(rctx, fc.Args["id"].(gidx.PrefixedID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1913,16 +2221,16 @@ func (ec *executionContext) fieldContext_Entity_findInstanceByID(ctx context.Con
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Instance_id(ctx, field)
-			case "locationID":
-				return ec.fieldContext_Instance_locationID(ctx, field)
-			case "tenantID":
-				return ec.fieldContext_Instance_tenantID(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Instance_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Instance_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_Instance_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_Instance_tenantID(ctx, field)
+			case "locationID":
+				return ec.fieldContext_Instance_locationID(ctx, field)
 			case "instanceProviderID":
 				return ec.fieldContext_Instance_instanceProviderID(ctx, field)
 			case "instanceProvider":
@@ -1965,7 +2273,7 @@ func (ec *executionContext) _Entity_findInstanceMetadataByID(ctx context.Context
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Entity().FindInstanceMetadataByID(rctx, fc.Args["id"].(idx.PrefixedID))
+		return ec.resolvers.Entity().FindInstanceMetadataByID(rctx, fc.Args["id"].(gidx.PrefixedID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2036,7 +2344,7 @@ func (ec *executionContext) _Entity_findInstanceProviderByID(ctx context.Context
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Entity().FindInstanceProviderByID(rctx, fc.Args["id"].(idx.PrefixedID))
+		return ec.resolvers.Entity().FindInstanceProviderByID(rctx, fc.Args["id"].(gidx.PrefixedID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2063,14 +2371,18 @@ func (ec *executionContext) fieldContext_Entity_findInstanceProviderByID(ctx con
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_InstanceProvider_id(ctx, field)
-			case "name":
-				return ec.fieldContext_InstanceProvider_name(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_InstanceProvider_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_InstanceProvider_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_InstanceProvider_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_InstanceProvider_tenantID(ctx, field)
 			case "instances":
 				return ec.fieldContext_InstanceProvider_instances(ctx, field)
+			case "tenant":
+				return ec.fieldContext_InstanceProvider_tenant(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type InstanceProvider", field.Name)
 		},
@@ -2103,7 +2415,7 @@ func (ec *executionContext) _Entity_findLocationByID(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Entity().FindLocationByID(rctx, fc.Args["id"].(idx.PrefixedID))
+		return ec.resolvers.Entity().FindLocationByID(rctx, fc.Args["id"].(gidx.PrefixedID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2164,7 +2476,7 @@ func (ec *executionContext) _Entity_findTenantByID(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Entity().FindTenantByID(rctx, fc.Args["id"].(idx.PrefixedID))
+		return ec.resolvers.Entity().FindTenantByID(rctx, fc.Args["id"].(gidx.PrefixedID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2193,6 +2505,8 @@ func (ec *executionContext) fieldContext_Entity_findTenantByID(ctx context.Conte
 				return ec.fieldContext_Tenant_id(ctx, field)
 			case "instances":
 				return ec.fieldContext_Tenant_instances(ctx, field)
+			case "instanceProviders":
+				return ec.fieldContext_Tenant_instanceProviders(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Tenant", field.Name)
 		},
@@ -2237,94 +2551,12 @@ func (ec *executionContext) _Instance_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Instance_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Instance",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Instance_locationID(ctx context.Context, field graphql.CollectedField, obj *generated.Instance) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Instance_locationID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.LocationID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(idx.PrefixedID)
-	fc.Result = res
-	return ec.marshalOID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Instance_locationID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Instance",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Instance_tenantID(ctx context.Context, field graphql.CollectedField, obj *generated.Instance) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Instance_tenantID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TenantID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(idx.PrefixedID)
-	fc.Result = res
-	return ec.marshalOID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Instance_tenantID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Instance",
 		Field:      field,
@@ -2469,6 +2701,94 @@ func (ec *executionContext) fieldContext_Instance_name(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Instance_tenantID(ctx context.Context, field graphql.CollectedField, obj *generated.Instance) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Instance_tenantID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Instance().TenantID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Instance_tenantID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Instance",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Instance_locationID(ctx context.Context, field graphql.CollectedField, obj *generated.Instance) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Instance_locationID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Instance().LocationID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Instance_locationID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Instance",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Instance_instanceProviderID(ctx context.Context, field graphql.CollectedField, obj *generated.Instance) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Instance_instanceProviderID(ctx, field)
 	if err != nil {
@@ -2495,9 +2815,9 @@ func (ec *executionContext) _Instance_instanceProviderID(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Instance_instanceProviderID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2554,14 +2874,18 @@ func (ec *executionContext) fieldContext_Instance_instanceProvider(ctx context.C
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_InstanceProvider_id(ctx, field)
-			case "name":
-				return ec.fieldContext_InstanceProvider_name(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_InstanceProvider_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_InstanceProvider_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_InstanceProvider_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_InstanceProvider_tenantID(ctx, field)
 			case "instances":
 				return ec.fieldContext_InstanceProvider_instances(ctx, field)
+			case "tenant":
+				return ec.fieldContext_InstanceProvider_tenant(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type InstanceProvider", field.Name)
 		},
@@ -2583,7 +2907,7 @@ func (ec *executionContext) _Instance_metadata(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Metadata(ctx, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceMetadataOrder), fc.Args["where"].(*generated.InstanceMetadataWhereInput))
+		return obj.Metadata(ctx, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceMetadataOrder), fc.Args["where"].(*generated.InstanceMetadataWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2725,6 +3049,8 @@ func (ec *executionContext) fieldContext_Instance_tenant(ctx context.Context, fi
 				return ec.fieldContext_Tenant_id(ctx, field)
 			case "instances":
 				return ec.fieldContext_Tenant_instances(ctx, field)
+			case "instanceProviders":
+				return ec.fieldContext_Tenant_instanceProviders(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Tenant", field.Name)
 		},
@@ -2805,7 +3131,7 @@ func (ec *executionContext) _InstanceConnection_pageInfo(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.PageInfo[idx.PrefixedID])
+	res := resTmp.(entgql.PageInfo[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
@@ -2915,16 +3241,16 @@ func (ec *executionContext) fieldContext_InstanceEdge_node(ctx context.Context, 
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Instance_id(ctx, field)
-			case "locationID":
-				return ec.fieldContext_Instance_locationID(ctx, field)
-			case "tenantID":
-				return ec.fieldContext_Instance_tenantID(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Instance_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Instance_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_Instance_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_Instance_tenantID(ctx, field)
+			case "locationID":
+				return ec.fieldContext_Instance_locationID(ctx, field)
 			case "instanceProviderID":
 				return ec.fieldContext_Instance_instanceProviderID(ctx, field)
 			case "instanceProvider":
@@ -2968,7 +3294,7 @@ func (ec *executionContext) _InstanceEdge_cursor(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.Cursor[idx.PrefixedID])
+	res := resTmp.(entgql.Cursor[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -3012,9 +3338,9 @@ func (ec *executionContext) _InstanceMetadata_id(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_InstanceMetadata_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3232,9 +3558,9 @@ func (ec *executionContext) _InstanceMetadata_instanceID(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_InstanceMetadata_instanceID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3291,16 +3617,16 @@ func (ec *executionContext) fieldContext_InstanceMetadata_instance(ctx context.C
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_Instance_id(ctx, field)
-			case "locationID":
-				return ec.fieldContext_Instance_locationID(ctx, field)
-			case "tenantID":
-				return ec.fieldContext_Instance_tenantID(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_Instance_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Instance_updatedAt(ctx, field)
 			case "name":
 				return ec.fieldContext_Instance_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_Instance_tenantID(ctx, field)
+			case "locationID":
+				return ec.fieldContext_Instance_locationID(ctx, field)
 			case "instanceProviderID":
 				return ec.fieldContext_Instance_instanceProviderID(ctx, field)
 			case "instanceProvider":
@@ -3391,7 +3717,7 @@ func (ec *executionContext) _InstanceMetadataConnection_pageInfo(ctx context.Con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.PageInfo[idx.PrefixedID])
+	res := resTmp.(entgql.PageInfo[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
@@ -3546,7 +3872,7 @@ func (ec *executionContext) _InstanceMetadataEdge_cursor(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.Cursor[idx.PrefixedID])
+	res := resTmp.(entgql.Cursor[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -3590,9 +3916,9 @@ func (ec *executionContext) _InstanceProvider_id(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_InstanceProvider_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3603,50 +3929,6 @@ func (ec *executionContext) fieldContext_InstanceProvider_id(ctx context.Context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _InstanceProvider_name(ctx context.Context, field graphql.CollectedField, obj *generated.InstanceProvider) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_InstanceProvider_name(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_InstanceProvider_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "InstanceProvider",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3740,6 +4022,94 @@ func (ec *executionContext) fieldContext_InstanceProvider_updatedAt(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _InstanceProvider_name(ctx context.Context, field graphql.CollectedField, obj *generated.InstanceProvider) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_InstanceProvider_name(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_InstanceProvider_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "InstanceProvider",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _InstanceProvider_tenantID(ctx context.Context, field graphql.CollectedField, obj *generated.InstanceProvider) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_InstanceProvider_tenantID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.InstanceProvider().TenantID(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_InstanceProvider_tenantID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "InstanceProvider",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _InstanceProvider_instances(ctx context.Context, field graphql.CollectedField, obj *generated.InstanceProvider) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_InstanceProvider_instances(ctx, field)
 	if err != nil {
@@ -3754,7 +4124,7 @@ func (ec *executionContext) _InstanceProvider_instances(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Instances(ctx, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
+		return obj.Instances(ctx, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3799,6 +4169,58 @@ func (ec *executionContext) fieldContext_InstanceProvider_instances(ctx context.
 	if fc.Args, err = ec.field_InstanceProvider_instances_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _InstanceProvider_tenant(ctx context.Context, field graphql.CollectedField, obj *generated.InstanceProvider) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_InstanceProvider_tenant(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.InstanceProvider().Tenant(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*Tenant)
+	fc.Result = res
+	return ec.marshalNTenant2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋgraphapiᚋgeneratedᚐTenant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_InstanceProvider_tenant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "InstanceProvider",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Tenant_id(ctx, field)
+			case "instances":
+				return ec.fieldContext_Tenant_instances(ctx, field)
+			case "instanceProviders":
+				return ec.fieldContext_Tenant_instanceProviders(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Tenant", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -3876,7 +4298,7 @@ func (ec *executionContext) _InstanceProviderConnection_pageInfo(ctx context.Con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.PageInfo[idx.PrefixedID])
+	res := resTmp.(entgql.PageInfo[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx, field.Selections, res)
 }
@@ -3986,14 +4408,18 @@ func (ec *executionContext) fieldContext_InstanceProviderEdge_node(ctx context.C
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_InstanceProvider_id(ctx, field)
-			case "name":
-				return ec.fieldContext_InstanceProvider_name(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_InstanceProvider_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_InstanceProvider_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_InstanceProvider_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_InstanceProvider_tenantID(ctx, field)
 			case "instances":
 				return ec.fieldContext_InstanceProvider_instances(ctx, field)
+			case "tenant":
+				return ec.fieldContext_InstanceProvider_tenant(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type InstanceProvider", field.Name)
 		},
@@ -4027,7 +4453,7 @@ func (ec *executionContext) _InstanceProviderEdge_cursor(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(entgql.Cursor[idx.PrefixedID])
+	res := resTmp.(entgql.Cursor[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -4071,9 +4497,9 @@ func (ec *executionContext) _Location_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Location_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4103,7 +4529,7 @@ func (ec *executionContext) _Location_instances(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Location().Instances(rctx, obj, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
+		return ec.resolvers.Location().Instances(rctx, obj, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4152,7 +4578,378 @@ func (ec *executionContext) fieldContext_Location_instances(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[idx.PrefixedID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_createInstance(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createInstance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateInstance(rctx, fc.Args["input"].(generated.CreateInstanceInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.Instance)
+	fc.Result = res
+	return ec.marshalNInstance2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstance(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createInstance(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Instance_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Instance_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Instance_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Instance_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_Instance_tenantID(ctx, field)
+			case "locationID":
+				return ec.fieldContext_Instance_locationID(ctx, field)
+			case "instanceProviderID":
+				return ec.fieldContext_Instance_instanceProviderID(ctx, field)
+			case "instanceProvider":
+				return ec.fieldContext_Instance_instanceProvider(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Instance_metadata(ctx, field)
+			case "location":
+				return ec.fieldContext_Instance_location(ctx, field)
+			case "tenant":
+				return ec.fieldContext_Instance_tenant(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Instance", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createInstance_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateInstance(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateInstance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateInstance(rctx, fc.Args["input"].(generated.UpdateInstanceInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.Instance)
+	fc.Result = res
+	return ec.marshalNInstance2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstance(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateInstance(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Instance_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Instance_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Instance_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Instance_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_Instance_tenantID(ctx, field)
+			case "locationID":
+				return ec.fieldContext_Instance_locationID(ctx, field)
+			case "instanceProviderID":
+				return ec.fieldContext_Instance_instanceProviderID(ctx, field)
+			case "instanceProvider":
+				return ec.fieldContext_Instance_instanceProvider(ctx, field)
+			case "metadata":
+				return ec.fieldContext_Instance_metadata(ctx, field)
+			case "location":
+				return ec.fieldContext_Instance_location(ctx, field)
+			case "tenant":
+				return ec.fieldContext_Instance_tenant(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Instance", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateInstance_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_setInstanceAnnotation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_setInstanceAnnotation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().SetInstanceAnnotation(rctx, fc.Args["instanceID"].(gidx.PrefixedID), fc.Args["namespace"].(string), fc.Args["data"].(json.RawMessage))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.InstanceMetadata)
+	fc.Result = res
+	return ec.marshalNInstanceMetadata2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceMetadata(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_setInstanceAnnotation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_InstanceMetadata_id(ctx, field)
+			case "namespace":
+				return ec.fieldContext_InstanceMetadata_namespace(ctx, field)
+			case "data":
+				return ec.fieldContext_InstanceMetadata_data(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_InstanceMetadata_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_InstanceMetadata_updatedAt(ctx, field)
+			case "instanceID":
+				return ec.fieldContext_InstanceMetadata_instanceID(ctx, field)
+			case "instance":
+				return ec.fieldContext_InstanceMetadata_instance(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type InstanceMetadata", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_setInstanceAnnotation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createInstanceProvider(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createInstanceProvider(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateInstanceProvider(rctx, fc.Args["input"].(generated.CreateInstanceProviderInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.InstanceProvider)
+	fc.Result = res
+	return ec.marshalNInstanceProvider2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceProvider(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createInstanceProvider(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_InstanceProvider_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_InstanceProvider_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_InstanceProvider_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_InstanceProvider_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_InstanceProvider_tenantID(ctx, field)
+			case "instances":
+				return ec.fieldContext_InstanceProvider_instances(ctx, field)
+			case "tenant":
+				return ec.fieldContext_InstanceProvider_tenant(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type InstanceProvider", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createInstanceProvider_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateInstanceProvider(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateInstanceProvider(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateInstanceProvider(rctx, fc.Args["input"].(generated.UpdateInstanceProviderInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.InstanceProvider)
+	fc.Result = res
+	return ec.marshalNInstanceProvider2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceProvider(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateInstanceProvider(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_InstanceProvider_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_InstanceProvider_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_InstanceProvider_updatedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_InstanceProvider_name(ctx, field)
+			case "tenantID":
+				return ec.fieldContext_InstanceProvider_tenantID(ctx, field)
+			case "instances":
+				return ec.fieldContext_InstanceProvider_instances(ctx, field)
+			case "tenant":
+				return ec.fieldContext_InstanceProvider_tenant(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type InstanceProvider", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateInstanceProvider_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[gidx.PrefixedID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasNextPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4196,7 +4993,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasNextPage(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[idx.PrefixedID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_hasPreviousPage(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[gidx.PrefixedID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_hasPreviousPage(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4240,7 +5037,7 @@ func (ec *executionContext) fieldContext_PageInfo_hasPreviousPage(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[idx.PrefixedID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[gidx.PrefixedID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_startCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4263,7 +5060,7 @@ func (ec *executionContext) _PageInfo_startCursor(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*entgql.Cursor[idx.PrefixedID])
+	res := resTmp.(*entgql.Cursor[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -4281,7 +5078,7 @@ func (ec *executionContext) fieldContext_PageInfo_startCursor(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[idx.PrefixedID]) (ret graphql.Marshaler) {
+func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graphql.CollectedField, obj *entgql.PageInfo[gidx.PrefixedID]) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PageInfo_endCursor(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4304,7 +5101,7 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*entgql.Cursor[idx.PrefixedID])
+	res := resTmp.(*entgql.Cursor[gidx.PrefixedID])
 	fc.Result = res
 	return ec.marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx, field.Selections, res)
 }
@@ -4336,7 +5133,7 @@ func (ec *executionContext) _Query_instances(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Instances(rctx, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
+		return ec.resolvers.Query().Instances(rctx, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4399,7 +5196,7 @@ func (ec *executionContext) _Query_instanceMetadataSlice(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().InstanceMetadataSlice(rctx, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceMetadataOrder), fc.Args["where"].(*generated.InstanceMetadataWhereInput))
+		return ec.resolvers.Query().InstanceMetadataSlice(rctx, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceMetadataOrder), fc.Args["where"].(*generated.InstanceMetadataWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4462,7 +5259,7 @@ func (ec *executionContext) _Query_instanceProviders(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().InstanceProviders(rctx, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceProviderOrder), fc.Args["where"].(*generated.InstanceProviderWhereInput))
+		return ec.resolvers.Query().InstanceProviders(rctx, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceProviderOrder), fc.Args["where"].(*generated.InstanceProviderWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4769,9 +5566,9 @@ func (ec *executionContext) _Tenant_id(ctx context.Context, field graphql.Collec
 		}
 		return graphql.Null
 	}
-	res := resTmp.(idx.PrefixedID)
+	res := resTmp.(gidx.PrefixedID)
 	fc.Result = res
-	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, field.Selections, res)
+	return ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Tenant_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4801,7 +5598,7 @@ func (ec *executionContext) _Tenant_instances(ctx context.Context, field graphql
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Tenant().Instances(rctx, obj, fc.Args["after"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[idx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
+		return ec.resolvers.Tenant().Instances(rctx, obj, fc.Args["after"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["first"].(*int), fc.Args["before"].(*entgql.Cursor[gidx.PrefixedID]), fc.Args["last"].(*int), fc.Args["orderBy"].(*generated.InstanceOrder), fc.Args["where"].(*generated.InstanceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4844,6 +5641,69 @@ func (ec *executionContext) fieldContext_Tenant_instances(ctx context.Context, f
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Tenant_instances_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Tenant_instanceProviders(ctx context.Context, field graphql.CollectedField, obj *Tenant) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Tenant_instanceProviders(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.InstanceProviders, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*generated.InstanceProviderConnection)
+	fc.Result = res
+	return ec.marshalNInstanceProviderConnection2ᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceProviderConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Tenant_instanceProviders(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Tenant",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_InstanceProviderConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_InstanceProviderConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_InstanceProviderConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type InstanceProviderConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Tenant_instanceProviders_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -6671,29 +7531,13 @@ func (ec *executionContext) unmarshalInputCreateInstanceInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"locationID", "tenantID", "name", "instanceProviderID", "metadatumIDs"}
+	fieldsInOrder := [...]string{"name", "tenantID", "locationID", "instanceProviderID", "metadatumIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "locationID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationID"))
-			it.LocationID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantID"))
-			it.TenantID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -6702,11 +7546,33 @@ func (ec *executionContext) unmarshalInputCreateInstanceInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "tenantID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CreateInstanceInput().TenantID(ctx, &it, data); err != nil {
+				return it, err
+			}
+		case "locationID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			if err = ec.resolvers.CreateInstanceInput().LocationID(ctx, &it, data); err != nil {
+				return it, err
+			}
 		case "instanceProviderID":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderID"))
-			it.InstanceProviderID, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceProviderID, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6714,51 +7580,7 @@ func (ec *executionContext) unmarshalInputCreateInstanceInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metadatumIDs"))
-			it.MetadatumIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputCreateInstanceMetadataInput(ctx context.Context, obj interface{}) (generated.CreateInstanceMetadataInput, error) {
-	var it generated.CreateInstanceMetadataInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"namespace", "data", "instanceID"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "namespace":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("namespace"))
-			it.Namespace, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "data":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
-			it.Data, err = ec.unmarshalNJSON2encodingᚋjsonᚐRawMessage(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceID"))
-			it.InstanceID, err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.MetadatumIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6775,7 +7597,7 @@ func (ec *executionContext) unmarshalInputCreateInstanceProviderInput(ctx contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "createdAt", "updatedAt", "instanceIDs"}
+	fieldsInOrder := [...]string{"name", "tenantID", "instanceIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6790,27 +7612,22 @@ func (ec *executionContext) unmarshalInputCreateInstanceProviderInput(ctx contex
 			if err != nil {
 				return it, err
 			}
-		case "createdAt":
+		case "tenantID":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
+			if err = ec.resolvers.CreateInstanceProviderInput().TenantID(ctx, &it, data); err != nil {
 				return it, err
 			}
 		case "instanceIDs":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDs"))
-			it.InstanceIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.InstanceIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6902,7 +7719,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6910,7 +7727,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6918,7 +7735,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6926,7 +7743,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6934,7 +7751,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6942,7 +7759,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6950,7 +7767,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6958,7 +7775,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7198,7 +8015,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceID"))
-			it.InstanceID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7206,7 +8023,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDNEQ"))
-			it.InstanceIDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7214,7 +8031,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDIn"))
-			it.InstanceIDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.InstanceIDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7222,7 +8039,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDNotIn"))
-			it.InstanceIDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.InstanceIDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7230,7 +8047,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDGT"))
-			it.InstanceIDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7238,7 +8055,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDGTE"))
-			it.InstanceIDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7246,7 +8063,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDLT"))
-			it.InstanceIDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7254,7 +8071,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDLTE"))
-			it.InstanceIDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7262,7 +8079,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDContains"))
-			it.InstanceIDContains, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDContains, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7270,7 +8087,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDHasPrefix"))
-			it.InstanceIDHasPrefix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDHasPrefix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7278,7 +8095,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDHasSuffix"))
-			it.InstanceIDHasSuffix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDHasSuffix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7286,7 +8103,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDEqualFold"))
-			it.InstanceIDEqualFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDEqualFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7294,7 +8111,7 @@ func (ec *executionContext) unmarshalInputInstanceMetadataWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceIDContainsFold"))
-			it.InstanceIDContainsFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.InstanceIDContainsFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7407,7 +8224,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "hasInstances", "hasInstancesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasInstances", "hasInstancesWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7442,7 +8259,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7450,7 +8267,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7458,7 +8275,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7466,7 +8283,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7474,7 +8291,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7482,7 +8299,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7490,7 +8307,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7498,111 +8315,7 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "name":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
-			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
-			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
-			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
-			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
-			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
-			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
-			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
-			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
-			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
-			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
-			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "nameContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
-			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7734,6 +8447,110 @@ func (ec *executionContext) unmarshalInputInstanceProviderWhereInput(ctx context
 			if err != nil {
 				return it, err
 			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "hasInstances":
 			var err error
 
@@ -7763,7 +8580,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "locationID", "locationIDNEQ", "locationIDIn", "locationIDNotIn", "locationIDGT", "locationIDGTE", "locationIDLT", "locationIDLTE", "locationIDContains", "locationIDHasPrefix", "locationIDHasSuffix", "locationIDIsNil", "locationIDNotNil", "locationIDEqualFold", "locationIDContainsFold", "tenantID", "tenantIDNEQ", "tenantIDIn", "tenantIDNotIn", "tenantIDGT", "tenantIDGTE", "tenantIDLT", "tenantIDLTE", "tenantIDContains", "tenantIDHasPrefix", "tenantIDHasSuffix", "tenantIDIsNil", "tenantIDNotNil", "tenantIDEqualFold", "tenantIDContainsFold", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "instanceProviderID", "instanceProviderIDNEQ", "instanceProviderIDIn", "instanceProviderIDNotIn", "instanceProviderIDGT", "instanceProviderIDGTE", "instanceProviderIDLT", "instanceProviderIDLTE", "instanceProviderIDContains", "instanceProviderIDHasPrefix", "instanceProviderIDHasSuffix", "instanceProviderIDEqualFold", "instanceProviderIDContainsFold", "hasInstanceProvider", "hasInstanceProviderWith", "hasMetadata", "hasMetadataWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "hasInstanceProvider", "hasInstanceProviderWith", "hasMetadata", "hasMetadataWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -7798,7 +8615,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.ID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7806,7 +8623,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
-			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7814,7 +8631,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
-			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7822,7 +8639,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
-			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
+			it.IDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7830,7 +8647,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
-			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7838,7 +8655,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
-			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7846,7 +8663,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
-			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -7854,247 +8671,7 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
-			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationID"))
-			it.LocationID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDNEQ"))
-			it.LocationIDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDIn"))
-			it.LocationIDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDNotIn"))
-			it.LocationIDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDGT"))
-			it.LocationIDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDGTE"))
-			it.LocationIDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDLT"))
-			it.LocationIDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDLTE"))
-			it.LocationIDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDContains"))
-			it.LocationIDContains, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDHasPrefix"))
-			it.LocationIDHasPrefix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDHasSuffix"))
-			it.LocationIDHasSuffix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDIsNil"))
-			it.LocationIDIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDNotNil"))
-			it.LocationIDNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDEqualFold"))
-			it.LocationIDEqualFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "locationIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("locationIDContainsFold"))
-			it.LocationIDContainsFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantID"))
-			it.TenantID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDNEQ"))
-			it.TenantIDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDIn"))
-			it.TenantIDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDNotIn"))
-			it.TenantIDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDGT"))
-			it.TenantIDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDGTE"))
-			it.TenantIDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDLT"))
-			it.TenantIDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDLTE"))
-			it.TenantIDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDContains"))
-			it.TenantIDContains, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDHasPrefix"))
-			it.TenantIDHasPrefix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDHasSuffix"))
-			it.TenantIDHasSuffix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDIsNil"))
-			it.TenantIDIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDNotNil"))
-			it.TenantIDNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDEqualFold"))
-			it.TenantIDEqualFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "tenantIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tenantIDContainsFold"))
-			it.TenantIDContainsFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
+			it.IDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8330,110 +8907,6 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "instanceProviderID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderID"))
-			it.InstanceProviderID, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDNEQ"))
-			it.InstanceProviderIDNEQ, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDIn"))
-			it.InstanceProviderIDIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDNotIn"))
-			it.InstanceProviderIDNotIn, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDGT"))
-			it.InstanceProviderIDGT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDGTE"))
-			it.InstanceProviderIDGTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDLT"))
-			it.InstanceProviderIDLT, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDLTE"))
-			it.InstanceProviderIDLTE, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDContains"))
-			it.InstanceProviderIDContains, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDHasPrefix"))
-			it.InstanceProviderIDHasPrefix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDHasSuffix"))
-			it.InstanceProviderIDHasSuffix, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDEqualFold"))
-			it.InstanceProviderIDEqualFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "instanceProviderIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("instanceProviderIDContainsFold"))
-			it.InstanceProviderIDContainsFold, err = ec.unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "hasInstanceProvider":
 			var err error
 
@@ -8463,6 +8936,154 @@ func (ec *executionContext) unmarshalInputInstanceWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasMetadataWith"))
 			it.HasMetadataWith, err = ec.unmarshalOInstanceMetadataWhereInput2ᚕᚖgoᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐInstanceMetadataWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateInstanceInput(ctx context.Context, obj interface{}) (generated.UpdateInstanceInput, error) {
+	var it generated.UpdateInstanceInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "addMetadatumIDs", "removeMetadatumIDs", "clearMetadata"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addMetadatumIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addMetadatumIDs"))
+			it.AddMetadatumIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "removeMetadatumIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeMetadatumIDs"))
+			it.RemoveMetadatumIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clearMetadata":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearMetadata"))
+			it.ClearMetadata, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateInstanceMetadataInput(ctx context.Context, obj interface{}) (generated.UpdateInstanceMetadataInput, error) {
+	var it generated.UpdateInstanceMetadataInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"namespace", "data", "appendData"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "namespace":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("namespace"))
+			it.Namespace, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "data":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
+			it.Data, err = ec.unmarshalOJSON2encodingᚋjsonᚐRawMessage(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "appendData":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("appendData"))
+			it.AppendData, err = ec.unmarshalOJSON2encodingᚋjsonᚐRawMessage(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateInstanceProviderInput(ctx context.Context, obj interface{}) (generated.UpdateInstanceProviderInput, error) {
+	var it generated.UpdateInstanceProviderInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "addInstanceIDs", "removeInstanceIDs", "clearInstances"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addInstanceIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addInstanceIDs"))
+			it.AddInstanceIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "removeInstanceIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeInstanceIDs"))
+			it.RemoveInstanceIDs, err = ec.unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clearInstances":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearInstances"))
+			it.ClearInstances, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8710,14 +9331,6 @@ func (ec *executionContext) _Instance(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "locationID":
-
-			out.Values[i] = ec._Instance_locationID(ctx, field, obj)
-
-		case "tenantID":
-
-			out.Values[i] = ec._Instance_tenantID(ctx, field, obj)
-
 		case "createdAt":
 
 			out.Values[i] = ec._Instance_createdAt(ctx, field, obj)
@@ -8739,6 +9352,46 @@ func (ec *executionContext) _Instance(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "tenantID":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Instance_tenantID(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "locationID":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Instance_locationID(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "instanceProviderID":
 
 			out.Values[i] = ec._Instance_instanceProviderID(ctx, field, obj)
@@ -9079,13 +9732,6 @@ func (ec *executionContext) _InstanceProvider(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "name":
-
-			out.Values[i] = ec._InstanceProvider_name(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
 		case "createdAt":
 
 			out.Values[i] = ec._InstanceProvider_createdAt(ctx, field, obj)
@@ -9100,6 +9746,33 @@ func (ec *executionContext) _InstanceProvider(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "name":
+
+			out.Values[i] = ec._InstanceProvider_name(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "tenantID":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._InstanceProvider_tenantID(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "instances":
 			field := field
 
@@ -9110,6 +9783,26 @@ func (ec *executionContext) _InstanceProvider(ctx context.Context, sel ast.Selec
 					}
 				}()
 				res = ec._InstanceProvider_instances(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
+		case "tenant":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._InstanceProvider_tenant(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -9250,9 +9943,84 @@ func (ec *executionContext) _Location(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var mutationImplementors = []string{"Mutation"}
+
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Mutation",
+	})
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
+			Object: field.Name,
+			Field:  field,
+		})
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createInstance":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createInstance(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateInstance":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateInstance(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "setInstanceAnnotation":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_setInstanceAnnotation(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createInstanceProvider":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createInstanceProvider(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateInstanceProvider":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateInstanceProvider(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var pageInfoImplementors = []string{"PageInfo"}
 
-func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *entgql.PageInfo[idx.PrefixedID]) graphql.Marshaler {
+func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet, obj *entgql.PageInfo[gidx.PrefixedID]) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, pageInfoImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -9487,6 +10255,13 @@ func (ec *executionContext) _Tenant(ctx context.Context, sel ast.SelectionSet, o
 				return innerFunc(ctx)
 
 			})
+		case "instanceProviders":
+
+			out.Values[i] = ec._Tenant_instanceProviders(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -9856,23 +10631,33 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (entgql.Cursor[idx.PrefixedID], error) {
-	var res entgql.Cursor[idx.PrefixedID]
+func (ec *executionContext) unmarshalNCreateInstanceInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐCreateInstanceInput(ctx context.Context, v interface{}) (generated.CreateInstanceInput, error) {
+	res, err := ec.unmarshalInputCreateInstanceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateInstanceProviderInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐCreateInstanceProviderInput(ctx context.Context, v interface{}) (generated.CreateInstanceProviderInput, error) {
+	res, err := ec.unmarshalInputCreateInstanceProviderInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (entgql.Cursor[gidx.PrefixedID], error) {
+	var res entgql.Cursor[gidx.PrefixedID]
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[idx.PrefixedID]) graphql.Marshaler {
+func (ec *executionContext) marshalNCursor2entgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v entgql.Cursor[gidx.PrefixedID]) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, v interface{}) (idx.PrefixedID, error) {
-	var res idx.PrefixedID
+func (ec *executionContext) unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx context.Context, v interface{}) (gidx.PrefixedID, error) {
+	var res gidx.PrefixedID
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, sel ast.SelectionSet, v idx.PrefixedID) graphql.Marshaler {
+func (ec *executionContext) marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx context.Context, sel ast.SelectionSet, v gidx.PrefixedID) graphql.Marshaler {
 	return v
 }
 
@@ -10039,7 +10824,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 }
 
 func (ec *executionContext) unmarshalNJSON2encodingᚋjsonᚐRawMessage(ctx context.Context, v interface{}) (json.RawMessage, error) {
-	res, err := gqltypes.UnmarshalRawMessage(v)
+	res, err := entx.UnmarshalRawMessage(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -10050,7 +10835,7 @@ func (ec *executionContext) marshalNJSON2encodingᚋjsonᚐRawMessage(ctx contex
 		}
 		return graphql.Null
 	}
-	res := gqltypes.MarshalRawMessage(v)
+	res := entx.MarshalRawMessage(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -10083,7 +10868,7 @@ func (ec *executionContext) marshalNOrderDirection2entgoᚗioᚋcontribᚋentgql
 	return v
 }
 
-func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[idx.PrefixedID]) graphql.Marshaler {
+func (ec *executionContext) marshalNPageInfo2entgoᚗioᚋcontribᚋentgqlᚐPageInfo(ctx context.Context, sel ast.SelectionSet, v entgql.PageInfo[gidx.PrefixedID]) graphql.Marshaler {
 	return ec._PageInfo(ctx, sel, &v)
 }
 
@@ -10129,6 +10914,16 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateInstanceInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐUpdateInstanceInput(ctx context.Context, v interface{}) (generated.UpdateInstanceInput, error) {
+	res, err := ec.unmarshalInputUpdateInstanceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateInstanceProviderInput2goᚗinfratographerᚗcomᚋinstanceᚑapiᚋinternalᚋentᚋgeneratedᚐUpdateInstanceProviderInput(ctx context.Context, v interface{}) (generated.UpdateInstanceProviderInput, error) {
+	res, err := ec.unmarshalInputUpdateInstanceProviderInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalN_Any2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
@@ -10520,33 +11315,23 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (*entgql.Cursor[idx.PrefixedID], error) {
+func (ec *executionContext) unmarshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, v interface{}) (*entgql.Cursor[gidx.PrefixedID], error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(entgql.Cursor[idx.PrefixedID])
+	var res = new(entgql.Cursor[gidx.PrefixedID])
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v *entgql.Cursor[idx.PrefixedID]) graphql.Marshaler {
+func (ec *executionContext) marshalOCursor2ᚖentgoᚗioᚋcontribᚋentgqlᚐCursor(ctx context.Context, sel ast.SelectionSet, v *entgql.Cursor[gidx.PrefixedID]) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return v
 }
 
-func (ec *executionContext) unmarshalOID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, v interface{}) (idx.PrefixedID, error) {
-	var res idx.PrefixedID
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, sel ast.SelectionSet, v idx.PrefixedID) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx context.Context, v interface{}) ([]idx.PrefixedID, error) {
+func (ec *executionContext) unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx context.Context, v interface{}) ([]gidx.PrefixedID, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -10555,10 +11340,10 @@ func (ec *executionContext) unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidx�
 		vSlice = graphql.CoerceList(v)
 	}
 	var err error
-	res := make([]idx.PrefixedID, len(vSlice))
+	res := make([]gidx.PrefixedID, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -10566,13 +11351,13 @@ func (ec *executionContext) unmarshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidx�
 	return res, nil
 }
 
-func (ec *executionContext) marshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedIDᚄ(ctx context.Context, sel ast.SelectionSet, v []idx.PrefixedID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedIDᚄ(ctx context.Context, sel ast.SelectionSet, v []gidx.PrefixedID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx, sel, v[i])
+		ret[i] = ec.marshalNID2goᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx, sel, v[i])
 	}
 
 	for _, e := range ret {
@@ -10584,16 +11369,16 @@ func (ec *executionContext) marshalOID2ᚕgoᚗinfratographerᚗcomᚋxᚋidxᚐ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, v interface{}) (*idx.PrefixedID, error) {
+func (ec *executionContext) unmarshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx context.Context, v interface{}) (*gidx.PrefixedID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(idx.PrefixedID)
+	var res = new(gidx.PrefixedID)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋidxᚐPrefixedID(ctx context.Context, sel ast.SelectionSet, v *idx.PrefixedID) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚖgoᚗinfratographerᚗcomᚋxᚋgidxᚐPrefixedID(ctx context.Context, sel ast.SelectionSet, v *gidx.PrefixedID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -10886,6 +11671,22 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	res := graphql.MarshalInt(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOJSON2encodingᚋjsonᚐRawMessage(ctx context.Context, v interface{}) (json.RawMessage, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := entx.UnmarshalRawMessage(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOJSON2encodingᚋjsonᚐRawMessage(ctx context.Context, sel ast.SelectionSet, v json.RawMessage) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := entx.MarshalRawMessage(v)
 	return res
 }
 

@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceProviderUpdate is the builder for updating InstanceProvider entities.
@@ -50,14 +50,14 @@ func (ipu *InstanceProviderUpdate) SetName(s string) *InstanceProviderUpdate {
 }
 
 // AddInstanceIDs adds the "instances" edge to the Instance entity by IDs.
-func (ipu *InstanceProviderUpdate) AddInstanceIDs(ids ...idx.PrefixedID) *InstanceProviderUpdate {
+func (ipu *InstanceProviderUpdate) AddInstanceIDs(ids ...gidx.PrefixedID) *InstanceProviderUpdate {
 	ipu.mutation.AddInstanceIDs(ids...)
 	return ipu
 }
 
 // AddInstances adds the "instances" edges to the Instance entity.
 func (ipu *InstanceProviderUpdate) AddInstances(i ...*Instance) *InstanceProviderUpdate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -76,14 +76,14 @@ func (ipu *InstanceProviderUpdate) ClearInstances() *InstanceProviderUpdate {
 }
 
 // RemoveInstanceIDs removes the "instances" edge to Instance entities by IDs.
-func (ipu *InstanceProviderUpdate) RemoveInstanceIDs(ids ...idx.PrefixedID) *InstanceProviderUpdate {
+func (ipu *InstanceProviderUpdate) RemoveInstanceIDs(ids ...gidx.PrefixedID) *InstanceProviderUpdate {
 	ipu.mutation.RemoveInstanceIDs(ids...)
 	return ipu
 }
 
 // RemoveInstances removes "instances" edges to Instance entities.
 func (ipu *InstanceProviderUpdate) RemoveInstances(i ...*Instance) *InstanceProviderUpdate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -148,11 +148,11 @@ func (ipu *InstanceProviderUpdate) sqlSave(ctx context.Context) (n int, err erro
 			}
 		}
 	}
-	if value, ok := ipu.mutation.Name(); ok {
-		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
-	}
 	if value, ok := ipu.mutation.UpdatedAt(); ok {
 		_spec.SetField(instanceprovider.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := ipu.mutation.Name(); ok {
+		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
 	}
 	if ipu.mutation.InstancesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -226,14 +226,14 @@ func (ipuo *InstanceProviderUpdateOne) SetName(s string) *InstanceProviderUpdate
 }
 
 // AddInstanceIDs adds the "instances" edge to the Instance entity by IDs.
-func (ipuo *InstanceProviderUpdateOne) AddInstanceIDs(ids ...idx.PrefixedID) *InstanceProviderUpdateOne {
+func (ipuo *InstanceProviderUpdateOne) AddInstanceIDs(ids ...gidx.PrefixedID) *InstanceProviderUpdateOne {
 	ipuo.mutation.AddInstanceIDs(ids...)
 	return ipuo
 }
 
 // AddInstances adds the "instances" edges to the Instance entity.
 func (ipuo *InstanceProviderUpdateOne) AddInstances(i ...*Instance) *InstanceProviderUpdateOne {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -252,14 +252,14 @@ func (ipuo *InstanceProviderUpdateOne) ClearInstances() *InstanceProviderUpdateO
 }
 
 // RemoveInstanceIDs removes the "instances" edge to Instance entities by IDs.
-func (ipuo *InstanceProviderUpdateOne) RemoveInstanceIDs(ids ...idx.PrefixedID) *InstanceProviderUpdateOne {
+func (ipuo *InstanceProviderUpdateOne) RemoveInstanceIDs(ids ...gidx.PrefixedID) *InstanceProviderUpdateOne {
 	ipuo.mutation.RemoveInstanceIDs(ids...)
 	return ipuo
 }
 
 // RemoveInstances removes "instances" edges to Instance entities.
 func (ipuo *InstanceProviderUpdateOne) RemoveInstances(i ...*Instance) *InstanceProviderUpdateOne {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -354,11 +354,11 @@ func (ipuo *InstanceProviderUpdateOne) sqlSave(ctx context.Context) (_node *Inst
 			}
 		}
 	}
-	if value, ok := ipuo.mutation.Name(); ok {
-		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
-	}
 	if value, ok := ipuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(instanceprovider.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := ipuo.mutation.Name(); ok {
+		_spec.SetField(instanceprovider.FieldName, field.TypeString, value)
 	}
 	if ipuo.mutation.InstancesCleared() {
 		edge := &sqlgraph.EdgeSpec{

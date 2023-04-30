@@ -6,9 +6,10 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 
 	"go.infratographer.com/x/entx"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // Instance holds the schema definition for the Instance entity.
@@ -18,15 +19,6 @@ type Instance struct {
 
 func (Instance) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		idx.PrimaryKeyMixin(idPrefixInstance),
-		entx.ExternalEdge(
-			entx.WithExternalEdgeType("Location"),
-			entx.ExternalEdgeImmutable(true),
-		),
-		entx.ExternalEdge(
-			entx.WithExternalEdgeType("Tenant"),
-			entx.ExternalEdgeImmutable(true),
-		),
 		entx.TimestampsMixin{},
 	}
 }
@@ -34,14 +26,34 @@ func (Instance) Mixin() []ent.Mixin {
 // Fields of the Instance.
 func (Instance) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			GoType(gidx.PrefixedID("")).
+			DefaultFunc(func() gidx.PrefixedID { return gidx.MustNewID(idPrefixInstance) }).
+			Unique().
+			Immutable(),
 		field.Text("name").
 			NotEmpty().
 			Annotations(
 				entgql.OrderField("NAME"),
 			),
+		field.String("tenant_id").
+			GoType(gidx.PrefixedID("")).
+			Immutable().
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput, entgql.SkipMutationUpdateInput),
+			),
+		field.String("location_id").
+			GoType(gidx.PrefixedID("")).
+			Immutable().
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput, entgql.SkipMutationUpdateInput),
+			),
 		field.String("instance_provider_id").
-			GoType(idx.PrefixedID("")).
-			Immutable(),
+			GoType(gidx.PrefixedID("")).
+			Immutable().
+			Annotations(
+				entgql.Skip(entgql.SkipWhereInput, entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 
@@ -62,10 +74,19 @@ func (Instance) Edges() []ent.Edge {
 	}
 }
 
+func (Instance) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("instance_provider_id"),
+		index.Fields("location_id"),
+		index.Fields("tenant_id"),
+	}
+}
+
 func (Instance) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entx.GraphKeyDirective("id"),
 		entgql.RelayConnection(),
 		entgql.QueryField(),
-		entgql.Mutations(entgql.MutationCreate()),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

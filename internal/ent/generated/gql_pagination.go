@@ -32,13 +32,13 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // Common entgql types.
 type (
-	Cursor         = entgql.Cursor[idx.PrefixedID]
-	PageInfo       = entgql.PageInfo[idx.PrefixedID]
+	Cursor         = entgql.Cursor[gidx.PrefixedID]
+	PageInfo       = entgql.PageInfo[gidx.PrefixedID]
 	OrderDirection = entgql.OrderDirection
 )
 
@@ -921,34 +921,6 @@ var (
 			}
 		},
 	}
-	// InstanceProviderOrderFieldCreatedAt orders InstanceProvider by created_at.
-	InstanceProviderOrderFieldCreatedAt = &InstanceProviderOrderField{
-		Value: func(ip *InstanceProvider) (ent.Value, error) {
-			return ip.CreatedAt, nil
-		},
-		column: instanceprovider.FieldCreatedAt,
-		toTerm: instanceprovider.ByCreatedAt,
-		toCursor: func(ip *InstanceProvider) Cursor {
-			return Cursor{
-				ID:    ip.ID,
-				Value: ip.CreatedAt,
-			}
-		},
-	}
-	// InstanceProviderOrderFieldUpdatedAt orders InstanceProvider by updated_at.
-	InstanceProviderOrderFieldUpdatedAt = &InstanceProviderOrderField{
-		Value: func(ip *InstanceProvider) (ent.Value, error) {
-			return ip.UpdatedAt, nil
-		},
-		column: instanceprovider.FieldUpdatedAt,
-		toTerm: instanceprovider.ByUpdatedAt,
-		toCursor: func(ip *InstanceProvider) Cursor {
-			return Cursor{
-				ID:    ip.ID,
-				Value: ip.UpdatedAt,
-			}
-		},
-	}
 )
 
 // String implement fmt.Stringer interface.
@@ -957,10 +929,6 @@ func (f InstanceProviderOrderField) String() string {
 	switch f.column {
 	case InstanceProviderOrderFieldName.column:
 		str = "NAME"
-	case InstanceProviderOrderFieldCreatedAt.column:
-		str = "CREATED_AT"
-	case InstanceProviderOrderFieldUpdatedAt.column:
-		str = "UPDATED_AT"
 	}
 	return str
 }
@@ -979,10 +947,6 @@ func (f *InstanceProviderOrderField) UnmarshalGQL(v interface{}) error {
 	switch str {
 	case "NAME":
 		*f = *InstanceProviderOrderFieldName
-	case "CREATED_AT":
-		*f = *InstanceProviderOrderFieldCreatedAt
-	case "UPDATED_AT":
-		*f = *InstanceProviderOrderFieldUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid InstanceProviderOrderField", str)
 	}

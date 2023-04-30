@@ -19,7 +19,7 @@ import (
 	"go.infratographer.com/instance-api/internal/config"
 	ent "go.infratographer.com/instance-api/internal/ent/generated"
 	"go.infratographer.com/instance-api/internal/graphapi"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 var defaultLBAPIListenAddr = ":7608"
@@ -86,6 +86,7 @@ func serve(ctx context.Context) {
 
 	provider, err := client.InstanceProvider.Create().
 		SetName("Test Provider").
+		SetTenantID(gidx.MustNewID("tnntten")).
 		Save(ctx)
 	if err != nil {
 		log.Fatalf("failed creating a provider: %v", err)
@@ -98,8 +99,8 @@ func serve(ctx context.Context) {
 			instance, err := client.Instance.Create().
 				SetName(gofakeit.DomainName()).
 				SetInstanceProvider(provider).
-				SetTenantID(idx.MustNewID("tnntten")).
-				SetLocationID(idx.PrefixedID(locationID)).
+				SetTenantID(gidx.MustNewID("tnntten")).
+				SetLocationID(gidx.PrefixedID(locationID)).
 				Save(ctx)
 			if err != nil {
 				log.Fatalf("failed creating an instance: %v", err)

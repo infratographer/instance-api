@@ -49,10 +49,11 @@ func main() {
 
 	opts := []entc.Option{
 		entc.Extensions(
-			gqlExt,
 			xExt,
+			gqlExt,
 		),
 	}
+
 	if err := entc.Generate("./internal/ent/schema", &gen.Config{
 		Target:   "./internal/ent/generated",
 		Package:  "go.infratographer.com/instance-api/internal/ent/generated",

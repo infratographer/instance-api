@@ -25,11 +25,11 @@ var (
 	// InstancesColumns holds the columns for the "instances" table.
 	InstancesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "location_id", Type: field.TypeString, Nullable: true, Size: 29},
-		{Name: "tenant_id", Type: field.TypeString, Nullable: true, Size: 29},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Size: 2147483647},
+		{Name: "tenant_id", Type: field.TypeString},
+		{Name: "location_id", Type: field.TypeString},
 		{Name: "instance_provider_id", Type: field.TypeString},
 	}
 	// InstancesTable holds the schema information for the "instances" table.
@@ -47,22 +47,27 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "instance_location_id",
+				Name:    "instance_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{InstancesColumns[1]},
 			},
 			{
-				Name:    "instance_tenant_id",
+				Name:    "instance_updated_at",
 				Unique:  false,
 				Columns: []*schema.Column{InstancesColumns[2]},
 			},
 			{
-				Name:    "instance_created_at",
+				Name:    "instance_instance_provider_id",
 				Unique:  false,
-				Columns: []*schema.Column{InstancesColumns[3]},
+				Columns: []*schema.Column{InstancesColumns[6]},
 			},
 			{
-				Name:    "instance_updated_at",
+				Name:    "instance_location_id",
+				Unique:  false,
+				Columns: []*schema.Column{InstancesColumns[5]},
+			},
+			{
+				Name:    "instance_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{InstancesColumns[4]},
 			},
@@ -101,20 +106,43 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{InstanceMetadataColumns[4]},
 			},
+			{
+				Name:    "instancemetadata_instance_id",
+				Unique:  false,
+				Columns: []*schema.Column{InstanceMetadataColumns[5]},
+			},
 		},
 	}
 	// InstanceProvidersColumns holds the columns for the "instance_providers" table.
 	InstanceProvidersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "name", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, Size: 2147483647},
+		{Name: "tenant_id", Type: field.TypeString},
 	}
 	// InstanceProvidersTable holds the schema information for the "instance_providers" table.
 	InstanceProvidersTable = &schema.Table{
 		Name:       "instance_providers",
 		Columns:    InstanceProvidersColumns,
 		PrimaryKey: []*schema.Column{InstanceProvidersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "instanceprovider_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InstanceProvidersColumns[1]},
+			},
+			{
+				Name:    "instanceprovider_updated_at",
+				Unique:  false,
+				Columns: []*schema.Column{InstanceProvidersColumns[2]},
+			},
+			{
+				Name:    "instanceprovider_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{InstanceProvidersColumns[4]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

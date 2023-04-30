@@ -23,7 +23,7 @@ import (
 	"log"
 
 	"go.infratographer.com/instance-api/internal/ent/generated/migrate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -269,7 +269,7 @@ func (c *InstanceClient) UpdateOne(i *Instance) *InstanceUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *InstanceClient) UpdateOneID(id idx.PrefixedID) *InstanceUpdateOne {
+func (c *InstanceClient) UpdateOneID(id gidx.PrefixedID) *InstanceUpdateOne {
 	mutation := newInstanceMutation(c.config, OpUpdateOne, withInstanceID(id))
 	return &InstanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -286,7 +286,7 @@ func (c *InstanceClient) DeleteOne(i *Instance) *InstanceDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *InstanceClient) DeleteOneID(id idx.PrefixedID) *InstanceDeleteOne {
+func (c *InstanceClient) DeleteOneID(id gidx.PrefixedID) *InstanceDeleteOne {
 	builder := c.Delete().Where(instance.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -303,12 +303,12 @@ func (c *InstanceClient) Query() *InstanceQuery {
 }
 
 // Get returns a Instance entity by its id.
-func (c *InstanceClient) Get(ctx context.Context, id idx.PrefixedID) (*Instance, error) {
+func (c *InstanceClient) Get(ctx context.Context, id gidx.PrefixedID) (*Instance, error) {
 	return c.Query().Where(instance.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InstanceClient) GetX(ctx context.Context, id idx.PrefixedID) *Instance {
+func (c *InstanceClient) GetX(ctx context.Context, id gidx.PrefixedID) *Instance {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -419,7 +419,7 @@ func (c *InstanceMetadataClient) UpdateOne(im *InstanceMetadata) *InstanceMetada
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *InstanceMetadataClient) UpdateOneID(id idx.PrefixedID) *InstanceMetadataUpdateOne {
+func (c *InstanceMetadataClient) UpdateOneID(id gidx.PrefixedID) *InstanceMetadataUpdateOne {
 	mutation := newInstanceMetadataMutation(c.config, OpUpdateOne, withInstanceMetadataID(id))
 	return &InstanceMetadataUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -436,7 +436,7 @@ func (c *InstanceMetadataClient) DeleteOne(im *InstanceMetadata) *InstanceMetada
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *InstanceMetadataClient) DeleteOneID(id idx.PrefixedID) *InstanceMetadataDeleteOne {
+func (c *InstanceMetadataClient) DeleteOneID(id gidx.PrefixedID) *InstanceMetadataDeleteOne {
 	builder := c.Delete().Where(instancemetadata.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -453,12 +453,12 @@ func (c *InstanceMetadataClient) Query() *InstanceMetadataQuery {
 }
 
 // Get returns a InstanceMetadata entity by its id.
-func (c *InstanceMetadataClient) Get(ctx context.Context, id idx.PrefixedID) (*InstanceMetadata, error) {
+func (c *InstanceMetadataClient) Get(ctx context.Context, id gidx.PrefixedID) (*InstanceMetadata, error) {
 	return c.Query().Where(instancemetadata.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InstanceMetadataClient) GetX(ctx context.Context, id idx.PrefixedID) *InstanceMetadata {
+func (c *InstanceMetadataClient) GetX(ctx context.Context, id gidx.PrefixedID) *InstanceMetadata {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -553,7 +553,7 @@ func (c *InstanceProviderClient) UpdateOne(ip *InstanceProvider) *InstanceProvid
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *InstanceProviderClient) UpdateOneID(id idx.PrefixedID) *InstanceProviderUpdateOne {
+func (c *InstanceProviderClient) UpdateOneID(id gidx.PrefixedID) *InstanceProviderUpdateOne {
 	mutation := newInstanceProviderMutation(c.config, OpUpdateOne, withInstanceProviderID(id))
 	return &InstanceProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -570,7 +570,7 @@ func (c *InstanceProviderClient) DeleteOne(ip *InstanceProvider) *InstanceProvid
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *InstanceProviderClient) DeleteOneID(id idx.PrefixedID) *InstanceProviderDeleteOne {
+func (c *InstanceProviderClient) DeleteOneID(id gidx.PrefixedID) *InstanceProviderDeleteOne {
 	builder := c.Delete().Where(instanceprovider.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -587,12 +587,12 @@ func (c *InstanceProviderClient) Query() *InstanceProviderQuery {
 }
 
 // Get returns a InstanceProvider entity by its id.
-func (c *InstanceProviderClient) Get(ctx context.Context, id idx.PrefixedID) (*InstanceProvider, error) {
+func (c *InstanceProviderClient) Get(ctx context.Context, id gidx.PrefixedID) (*InstanceProvider, error) {
 	return c.Query().Where(instanceprovider.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InstanceProviderClient) GetX(ctx context.Context, id idx.PrefixedID) *InstanceProvider {
+func (c *InstanceProviderClient) GetX(ctx context.Context, id gidx.PrefixedID) *InstanceProvider {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

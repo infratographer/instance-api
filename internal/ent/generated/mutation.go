@@ -30,7 +30,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 const (
@@ -52,17 +52,17 @@ type InstanceMutation struct {
 	config
 	op                       Op
 	typ                      string
-	id                       *idx.PrefixedID
-	location_id              *idx.PrefixedID
-	tenant_id                *idx.PrefixedID
+	id                       *gidx.PrefixedID
 	created_at               *time.Time
 	updated_at               *time.Time
 	name                     *string
+	tenant_id                *gidx.PrefixedID
+	location_id              *gidx.PrefixedID
 	clearedFields            map[string]struct{}
-	instance_provider        *idx.PrefixedID
+	instance_provider        *gidx.PrefixedID
 	clearedinstance_provider bool
-	metadata                 map[idx.PrefixedID]struct{}
-	removedmetadata          map[idx.PrefixedID]struct{}
+	metadata                 map[gidx.PrefixedID]struct{}
+	removedmetadata          map[gidx.PrefixedID]struct{}
 	clearedmetadata          bool
 	done                     bool
 	oldValue                 func(context.Context) (*Instance, error)
@@ -89,7 +89,7 @@ func newInstanceMutation(c config, op Op, opts ...instanceOption) *InstanceMutat
 }
 
 // withInstanceID sets the ID field of the mutation.
-func withInstanceID(id idx.PrefixedID) instanceOption {
+func withInstanceID(id gidx.PrefixedID) instanceOption {
 	return func(m *InstanceMutation) {
 		var (
 			err   error
@@ -141,13 +141,13 @@ func (m InstanceMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Instance entities.
-func (m *InstanceMutation) SetID(id idx.PrefixedID) {
+func (m *InstanceMutation) SetID(id gidx.PrefixedID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *InstanceMutation) ID() (id idx.PrefixedID, exists bool) {
+func (m *InstanceMutation) ID() (id gidx.PrefixedID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -158,12 +158,12 @@ func (m *InstanceMutation) ID() (id idx.PrefixedID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *InstanceMutation) IDs(ctx context.Context) ([]idx.PrefixedID, error) {
+func (m *InstanceMutation) IDs(ctx context.Context) ([]gidx.PrefixedID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []idx.PrefixedID{id}, nil
+			return []gidx.PrefixedID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -171,104 +171,6 @@ func (m *InstanceMutation) IDs(ctx context.Context) ([]idx.PrefixedID, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetLocationID sets the "location_id" field.
-func (m *InstanceMutation) SetLocationID(ii idx.PrefixedID) {
-	m.location_id = &ii
-}
-
-// LocationID returns the value of the "location_id" field in the mutation.
-func (m *InstanceMutation) LocationID() (r idx.PrefixedID, exists bool) {
-	v := m.location_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLocationID returns the old "location_id" field's value of the Instance entity.
-// If the Instance object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstanceMutation) OldLocationID(ctx context.Context) (v idx.PrefixedID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLocationID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLocationID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLocationID: %w", err)
-	}
-	return oldValue.LocationID, nil
-}
-
-// ClearLocationID clears the value of the "location_id" field.
-func (m *InstanceMutation) ClearLocationID() {
-	m.location_id = nil
-	m.clearedFields[instance.FieldLocationID] = struct{}{}
-}
-
-// LocationIDCleared returns if the "location_id" field was cleared in this mutation.
-func (m *InstanceMutation) LocationIDCleared() bool {
-	_, ok := m.clearedFields[instance.FieldLocationID]
-	return ok
-}
-
-// ResetLocationID resets all changes to the "location_id" field.
-func (m *InstanceMutation) ResetLocationID() {
-	m.location_id = nil
-	delete(m.clearedFields, instance.FieldLocationID)
-}
-
-// SetTenantID sets the "tenant_id" field.
-func (m *InstanceMutation) SetTenantID(ii idx.PrefixedID) {
-	m.tenant_id = &ii
-}
-
-// TenantID returns the value of the "tenant_id" field in the mutation.
-func (m *InstanceMutation) TenantID() (r idx.PrefixedID, exists bool) {
-	v := m.tenant_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTenantID returns the old "tenant_id" field's value of the Instance entity.
-// If the Instance object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstanceMutation) OldTenantID(ctx context.Context) (v idx.PrefixedID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTenantID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
-	}
-	return oldValue.TenantID, nil
-}
-
-// ClearTenantID clears the value of the "tenant_id" field.
-func (m *InstanceMutation) ClearTenantID() {
-	m.tenant_id = nil
-	m.clearedFields[instance.FieldTenantID] = struct{}{}
-}
-
-// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
-func (m *InstanceMutation) TenantIDCleared() bool {
-	_, ok := m.clearedFields[instance.FieldTenantID]
-	return ok
-}
-
-// ResetTenantID resets all changes to the "tenant_id" field.
-func (m *InstanceMutation) ResetTenantID() {
-	m.tenant_id = nil
-	delete(m.clearedFields, instance.FieldTenantID)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -379,13 +281,85 @@ func (m *InstanceMutation) ResetName() {
 	m.name = nil
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (m *InstanceMutation) SetTenantID(gi gidx.PrefixedID) {
+	m.tenant_id = &gi
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *InstanceMutation) TenantID() (r gidx.PrefixedID, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the Instance entity.
+// If the Instance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InstanceMutation) OldTenantID(ctx context.Context) (v gidx.PrefixedID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *InstanceMutation) ResetTenantID() {
+	m.tenant_id = nil
+}
+
+// SetLocationID sets the "location_id" field.
+func (m *InstanceMutation) SetLocationID(gi gidx.PrefixedID) {
+	m.location_id = &gi
+}
+
+// LocationID returns the value of the "location_id" field in the mutation.
+func (m *InstanceMutation) LocationID() (r gidx.PrefixedID, exists bool) {
+	v := m.location_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocationID returns the old "location_id" field's value of the Instance entity.
+// If the Instance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InstanceMutation) OldLocationID(ctx context.Context) (v gidx.PrefixedID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocationID: %w", err)
+	}
+	return oldValue.LocationID, nil
+}
+
+// ResetLocationID resets all changes to the "location_id" field.
+func (m *InstanceMutation) ResetLocationID() {
+	m.location_id = nil
+}
+
 // SetInstanceProviderID sets the "instance_provider_id" field.
-func (m *InstanceMutation) SetInstanceProviderID(ii idx.PrefixedID) {
-	m.instance_provider = &ii
+func (m *InstanceMutation) SetInstanceProviderID(gi gidx.PrefixedID) {
+	m.instance_provider = &gi
 }
 
 // InstanceProviderID returns the value of the "instance_provider_id" field in the mutation.
-func (m *InstanceMutation) InstanceProviderID() (r idx.PrefixedID, exists bool) {
+func (m *InstanceMutation) InstanceProviderID() (r gidx.PrefixedID, exists bool) {
 	v := m.instance_provider
 	if v == nil {
 		return
@@ -396,7 +370,7 @@ func (m *InstanceMutation) InstanceProviderID() (r idx.PrefixedID, exists bool) 
 // OldInstanceProviderID returns the old "instance_provider_id" field's value of the Instance entity.
 // If the Instance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstanceMutation) OldInstanceProviderID(ctx context.Context) (v idx.PrefixedID, err error) {
+func (m *InstanceMutation) OldInstanceProviderID(ctx context.Context) (v gidx.PrefixedID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInstanceProviderID is only allowed on UpdateOne operations")
 	}
@@ -428,7 +402,7 @@ func (m *InstanceMutation) InstanceProviderCleared() bool {
 // InstanceProviderIDs returns the "instance_provider" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // InstanceProviderID instead. It exists only for internal usage by the builders.
-func (m *InstanceMutation) InstanceProviderIDs() (ids []idx.PrefixedID) {
+func (m *InstanceMutation) InstanceProviderIDs() (ids []gidx.PrefixedID) {
 	if id := m.instance_provider; id != nil {
 		ids = append(ids, *id)
 	}
@@ -442,9 +416,9 @@ func (m *InstanceMutation) ResetInstanceProvider() {
 }
 
 // AddMetadatumIDs adds the "metadata" edge to the InstanceMetadata entity by ids.
-func (m *InstanceMutation) AddMetadatumIDs(ids ...idx.PrefixedID) {
+func (m *InstanceMutation) AddMetadatumIDs(ids ...gidx.PrefixedID) {
 	if m.metadata == nil {
-		m.metadata = make(map[idx.PrefixedID]struct{})
+		m.metadata = make(map[gidx.PrefixedID]struct{})
 	}
 	for i := range ids {
 		m.metadata[ids[i]] = struct{}{}
@@ -462,9 +436,9 @@ func (m *InstanceMutation) MetadataCleared() bool {
 }
 
 // RemoveMetadatumIDs removes the "metadata" edge to the InstanceMetadata entity by IDs.
-func (m *InstanceMutation) RemoveMetadatumIDs(ids ...idx.PrefixedID) {
+func (m *InstanceMutation) RemoveMetadatumIDs(ids ...gidx.PrefixedID) {
 	if m.removedmetadata == nil {
-		m.removedmetadata = make(map[idx.PrefixedID]struct{})
+		m.removedmetadata = make(map[gidx.PrefixedID]struct{})
 	}
 	for i := range ids {
 		delete(m.metadata, ids[i])
@@ -473,7 +447,7 @@ func (m *InstanceMutation) RemoveMetadatumIDs(ids ...idx.PrefixedID) {
 }
 
 // RemovedMetadata returns the removed IDs of the "metadata" edge to the InstanceMetadata entity.
-func (m *InstanceMutation) RemovedMetadataIDs() (ids []idx.PrefixedID) {
+func (m *InstanceMutation) RemovedMetadataIDs() (ids []gidx.PrefixedID) {
 	for id := range m.removedmetadata {
 		ids = append(ids, id)
 	}
@@ -481,7 +455,7 @@ func (m *InstanceMutation) RemovedMetadataIDs() (ids []idx.PrefixedID) {
 }
 
 // MetadataIDs returns the "metadata" edge IDs in the mutation.
-func (m *InstanceMutation) MetadataIDs() (ids []idx.PrefixedID) {
+func (m *InstanceMutation) MetadataIDs() (ids []gidx.PrefixedID) {
 	for id := range m.metadata {
 		ids = append(ids, id)
 	}
@@ -530,12 +504,6 @@ func (m *InstanceMutation) Type() string {
 // AddedFields().
 func (m *InstanceMutation) Fields() []string {
 	fields := make([]string, 0, 6)
-	if m.location_id != nil {
-		fields = append(fields, instance.FieldLocationID)
-	}
-	if m.tenant_id != nil {
-		fields = append(fields, instance.FieldTenantID)
-	}
 	if m.created_at != nil {
 		fields = append(fields, instance.FieldCreatedAt)
 	}
@@ -544,6 +512,12 @@ func (m *InstanceMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, instance.FieldName)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, instance.FieldTenantID)
+	}
+	if m.location_id != nil {
+		fields = append(fields, instance.FieldLocationID)
 	}
 	if m.instance_provider != nil {
 		fields = append(fields, instance.FieldInstanceProviderID)
@@ -556,16 +530,16 @@ func (m *InstanceMutation) Fields() []string {
 // schema.
 func (m *InstanceMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case instance.FieldLocationID:
-		return m.LocationID()
-	case instance.FieldTenantID:
-		return m.TenantID()
 	case instance.FieldCreatedAt:
 		return m.CreatedAt()
 	case instance.FieldUpdatedAt:
 		return m.UpdatedAt()
 	case instance.FieldName:
 		return m.Name()
+	case instance.FieldTenantID:
+		return m.TenantID()
+	case instance.FieldLocationID:
+		return m.LocationID()
 	case instance.FieldInstanceProviderID:
 		return m.InstanceProviderID()
 	}
@@ -577,16 +551,16 @@ func (m *InstanceMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *InstanceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case instance.FieldLocationID:
-		return m.OldLocationID(ctx)
-	case instance.FieldTenantID:
-		return m.OldTenantID(ctx)
 	case instance.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case instance.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
 	case instance.FieldName:
 		return m.OldName(ctx)
+	case instance.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case instance.FieldLocationID:
+		return m.OldLocationID(ctx)
 	case instance.FieldInstanceProviderID:
 		return m.OldInstanceProviderID(ctx)
 	}
@@ -598,20 +572,6 @@ func (m *InstanceMutation) OldField(ctx context.Context, name string) (ent.Value
 // type.
 func (m *InstanceMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case instance.FieldLocationID:
-		v, ok := value.(idx.PrefixedID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLocationID(v)
-		return nil
-	case instance.FieldTenantID:
-		v, ok := value.(idx.PrefixedID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTenantID(v)
-		return nil
 	case instance.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -633,8 +593,22 @@ func (m *InstanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
+	case instance.FieldTenantID:
+		v, ok := value.(gidx.PrefixedID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case instance.FieldLocationID:
+		v, ok := value.(gidx.PrefixedID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocationID(v)
+		return nil
 	case instance.FieldInstanceProviderID:
-		v, ok := value.(idx.PrefixedID)
+		v, ok := value.(gidx.PrefixedID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -669,14 +643,7 @@ func (m *InstanceMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *InstanceMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(instance.FieldLocationID) {
-		fields = append(fields, instance.FieldLocationID)
-	}
-	if m.FieldCleared(instance.FieldTenantID) {
-		fields = append(fields, instance.FieldTenantID)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -689,14 +656,6 @@ func (m *InstanceMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *InstanceMutation) ClearField(name string) error {
-	switch name {
-	case instance.FieldLocationID:
-		m.ClearLocationID()
-		return nil
-	case instance.FieldTenantID:
-		m.ClearTenantID()
-		return nil
-	}
 	return fmt.Errorf("unknown Instance nullable field %s", name)
 }
 
@@ -704,12 +663,6 @@ func (m *InstanceMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *InstanceMutation) ResetField(name string) error {
 	switch name {
-	case instance.FieldLocationID:
-		m.ResetLocationID()
-		return nil
-	case instance.FieldTenantID:
-		m.ResetTenantID()
-		return nil
 	case instance.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -718,6 +671,12 @@ func (m *InstanceMutation) ResetField(name string) error {
 		return nil
 	case instance.FieldName:
 		m.ResetName()
+		return nil
+	case instance.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case instance.FieldLocationID:
+		m.ResetLocationID()
 		return nil
 	case instance.FieldInstanceProviderID:
 		m.ResetInstanceProviderID()
@@ -833,14 +792,14 @@ type InstanceMetadataMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *idx.PrefixedID
+	id              *gidx.PrefixedID
 	namespace       *string
 	data            *json.RawMessage
 	appenddata      json.RawMessage
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
-	instance        *idx.PrefixedID
+	instance        *gidx.PrefixedID
 	clearedinstance bool
 	done            bool
 	oldValue        func(context.Context) (*InstanceMetadata, error)
@@ -867,7 +826,7 @@ func newInstanceMetadataMutation(c config, op Op, opts ...instancemetadataOption
 }
 
 // withInstanceMetadataID sets the ID field of the mutation.
-func withInstanceMetadataID(id idx.PrefixedID) instancemetadataOption {
+func withInstanceMetadataID(id gidx.PrefixedID) instancemetadataOption {
 	return func(m *InstanceMetadataMutation) {
 		var (
 			err   error
@@ -919,13 +878,13 @@ func (m InstanceMetadataMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of InstanceMetadata entities.
-func (m *InstanceMetadataMutation) SetID(id idx.PrefixedID) {
+func (m *InstanceMetadataMutation) SetID(id gidx.PrefixedID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *InstanceMetadataMutation) ID() (id idx.PrefixedID, exists bool) {
+func (m *InstanceMetadataMutation) ID() (id gidx.PrefixedID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -936,12 +895,12 @@ func (m *InstanceMetadataMutation) ID() (id idx.PrefixedID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *InstanceMetadataMutation) IDs(ctx context.Context) ([]idx.PrefixedID, error) {
+func (m *InstanceMetadataMutation) IDs(ctx context.Context) ([]gidx.PrefixedID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []idx.PrefixedID{id}, nil
+			return []gidx.PrefixedID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1111,12 +1070,12 @@ func (m *InstanceMetadataMutation) ResetUpdatedAt() {
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (m *InstanceMetadataMutation) SetInstanceID(ii idx.PrefixedID) {
-	m.instance = &ii
+func (m *InstanceMetadataMutation) SetInstanceID(gi gidx.PrefixedID) {
+	m.instance = &gi
 }
 
 // InstanceID returns the value of the "instance_id" field in the mutation.
-func (m *InstanceMetadataMutation) InstanceID() (r idx.PrefixedID, exists bool) {
+func (m *InstanceMetadataMutation) InstanceID() (r gidx.PrefixedID, exists bool) {
 	v := m.instance
 	if v == nil {
 		return
@@ -1127,7 +1086,7 @@ func (m *InstanceMetadataMutation) InstanceID() (r idx.PrefixedID, exists bool) 
 // OldInstanceID returns the old "instance_id" field's value of the InstanceMetadata entity.
 // If the InstanceMetadata object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstanceMetadataMutation) OldInstanceID(ctx context.Context) (v idx.PrefixedID, err error) {
+func (m *InstanceMetadataMutation) OldInstanceID(ctx context.Context) (v gidx.PrefixedID, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInstanceID is only allowed on UpdateOne operations")
 	}
@@ -1159,7 +1118,7 @@ func (m *InstanceMetadataMutation) InstanceCleared() bool {
 // InstanceIDs returns the "instance" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // InstanceID instead. It exists only for internal usage by the builders.
-func (m *InstanceMetadataMutation) InstanceIDs() (ids []idx.PrefixedID) {
+func (m *InstanceMetadataMutation) InstanceIDs() (ids []gidx.PrefixedID) {
 	if id := m.instance; id != nil {
 		ids = append(ids, *id)
 	}
@@ -1297,7 +1256,7 @@ func (m *InstanceMetadataMutation) SetField(name string, value ent.Value) error 
 		m.SetUpdatedAt(v)
 		return nil
 	case instancemetadata.FieldInstanceID:
-		v, ok := value.(idx.PrefixedID)
+		v, ok := value.(gidx.PrefixedID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1450,13 +1409,14 @@ type InstanceProviderMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *idx.PrefixedID
-	name             *string
+	id               *gidx.PrefixedID
 	created_at       *time.Time
 	updated_at       *time.Time
+	name             *string
+	tenant_id        *gidx.PrefixedID
 	clearedFields    map[string]struct{}
-	instances        map[idx.PrefixedID]struct{}
-	removedinstances map[idx.PrefixedID]struct{}
+	instances        map[gidx.PrefixedID]struct{}
+	removedinstances map[gidx.PrefixedID]struct{}
 	clearedinstances bool
 	done             bool
 	oldValue         func(context.Context) (*InstanceProvider, error)
@@ -1483,7 +1443,7 @@ func newInstanceProviderMutation(c config, op Op, opts ...instanceproviderOption
 }
 
 // withInstanceProviderID sets the ID field of the mutation.
-func withInstanceProviderID(id idx.PrefixedID) instanceproviderOption {
+func withInstanceProviderID(id gidx.PrefixedID) instanceproviderOption {
 	return func(m *InstanceProviderMutation) {
 		var (
 			err   error
@@ -1535,13 +1495,13 @@ func (m InstanceProviderMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of InstanceProvider entities.
-func (m *InstanceProviderMutation) SetID(id idx.PrefixedID) {
+func (m *InstanceProviderMutation) SetID(id gidx.PrefixedID) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *InstanceProviderMutation) ID() (id idx.PrefixedID, exists bool) {
+func (m *InstanceProviderMutation) ID() (id gidx.PrefixedID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1552,12 +1512,12 @@ func (m *InstanceProviderMutation) ID() (id idx.PrefixedID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *InstanceProviderMutation) IDs(ctx context.Context) ([]idx.PrefixedID, error) {
+func (m *InstanceProviderMutation) IDs(ctx context.Context) ([]gidx.PrefixedID, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []idx.PrefixedID{id}, nil
+			return []gidx.PrefixedID{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1565,42 +1525,6 @@ func (m *InstanceProviderMutation) IDs(ctx context.Context) ([]idx.PrefixedID, e
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetName sets the "name" field.
-func (m *InstanceProviderMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *InstanceProviderMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the InstanceProvider entity.
-// If the InstanceProvider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *InstanceProviderMutation) OldName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *InstanceProviderMutation) ResetName() {
-	m.name = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1675,10 +1599,82 @@ func (m *InstanceProviderMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetName sets the "name" field.
+func (m *InstanceProviderMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *InstanceProviderMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the InstanceProvider entity.
+// If the InstanceProvider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InstanceProviderMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *InstanceProviderMutation) ResetName() {
+	m.name = nil
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *InstanceProviderMutation) SetTenantID(gi gidx.PrefixedID) {
+	m.tenant_id = &gi
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *InstanceProviderMutation) TenantID() (r gidx.PrefixedID, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the InstanceProvider entity.
+// If the InstanceProvider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InstanceProviderMutation) OldTenantID(ctx context.Context) (v gidx.PrefixedID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *InstanceProviderMutation) ResetTenantID() {
+	m.tenant_id = nil
+}
+
 // AddInstanceIDs adds the "instances" edge to the Instance entity by ids.
-func (m *InstanceProviderMutation) AddInstanceIDs(ids ...idx.PrefixedID) {
+func (m *InstanceProviderMutation) AddInstanceIDs(ids ...gidx.PrefixedID) {
 	if m.instances == nil {
-		m.instances = make(map[idx.PrefixedID]struct{})
+		m.instances = make(map[gidx.PrefixedID]struct{})
 	}
 	for i := range ids {
 		m.instances[ids[i]] = struct{}{}
@@ -1696,9 +1692,9 @@ func (m *InstanceProviderMutation) InstancesCleared() bool {
 }
 
 // RemoveInstanceIDs removes the "instances" edge to the Instance entity by IDs.
-func (m *InstanceProviderMutation) RemoveInstanceIDs(ids ...idx.PrefixedID) {
+func (m *InstanceProviderMutation) RemoveInstanceIDs(ids ...gidx.PrefixedID) {
 	if m.removedinstances == nil {
-		m.removedinstances = make(map[idx.PrefixedID]struct{})
+		m.removedinstances = make(map[gidx.PrefixedID]struct{})
 	}
 	for i := range ids {
 		delete(m.instances, ids[i])
@@ -1707,7 +1703,7 @@ func (m *InstanceProviderMutation) RemoveInstanceIDs(ids ...idx.PrefixedID) {
 }
 
 // RemovedInstances returns the removed IDs of the "instances" edge to the Instance entity.
-func (m *InstanceProviderMutation) RemovedInstancesIDs() (ids []idx.PrefixedID) {
+func (m *InstanceProviderMutation) RemovedInstancesIDs() (ids []gidx.PrefixedID) {
 	for id := range m.removedinstances {
 		ids = append(ids, id)
 	}
@@ -1715,7 +1711,7 @@ func (m *InstanceProviderMutation) RemovedInstancesIDs() (ids []idx.PrefixedID) 
 }
 
 // InstancesIDs returns the "instances" edge IDs in the mutation.
-func (m *InstanceProviderMutation) InstancesIDs() (ids []idx.PrefixedID) {
+func (m *InstanceProviderMutation) InstancesIDs() (ids []gidx.PrefixedID) {
 	for id := range m.instances {
 		ids = append(ids, id)
 	}
@@ -1763,15 +1759,18 @@ func (m *InstanceProviderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InstanceProviderMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.name != nil {
-		fields = append(fields, instanceprovider.FieldName)
-	}
+	fields := make([]string, 0, 4)
 	if m.created_at != nil {
 		fields = append(fields, instanceprovider.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, instanceprovider.FieldUpdatedAt)
+	}
+	if m.name != nil {
+		fields = append(fields, instanceprovider.FieldName)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, instanceprovider.FieldTenantID)
 	}
 	return fields
 }
@@ -1781,12 +1780,14 @@ func (m *InstanceProviderMutation) Fields() []string {
 // schema.
 func (m *InstanceProviderMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case instanceprovider.FieldName:
-		return m.Name()
 	case instanceprovider.FieldCreatedAt:
 		return m.CreatedAt()
 	case instanceprovider.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case instanceprovider.FieldName:
+		return m.Name()
+	case instanceprovider.FieldTenantID:
+		return m.TenantID()
 	}
 	return nil, false
 }
@@ -1796,12 +1797,14 @@ func (m *InstanceProviderMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *InstanceProviderMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case instanceprovider.FieldName:
-		return m.OldName(ctx)
 	case instanceprovider.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case instanceprovider.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case instanceprovider.FieldName:
+		return m.OldName(ctx)
+	case instanceprovider.FieldTenantID:
+		return m.OldTenantID(ctx)
 	}
 	return nil, fmt.Errorf("unknown InstanceProvider field %s", name)
 }
@@ -1811,13 +1814,6 @@ func (m *InstanceProviderMutation) OldField(ctx context.Context, name string) (e
 // type.
 func (m *InstanceProviderMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case instanceprovider.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
 	case instanceprovider.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1831,6 +1827,20 @@ func (m *InstanceProviderMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case instanceprovider.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case instanceprovider.FieldTenantID:
+		v, ok := value.(gidx.PrefixedID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown InstanceProvider field %s", name)
@@ -1881,14 +1891,17 @@ func (m *InstanceProviderMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *InstanceProviderMutation) ResetField(name string) error {
 	switch name {
-	case instanceprovider.FieldName:
-		m.ResetName()
-		return nil
 	case instanceprovider.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
 	case instanceprovider.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case instanceprovider.FieldName:
+		m.ResetName()
+		return nil
+	case instanceprovider.FieldTenantID:
+		m.ResetTenantID()
 		return nil
 	}
 	return fmt.Errorf("unknown InstanceProvider field %s", name)

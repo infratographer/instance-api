@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceMetadataQuery is the builder for querying InstanceMetadata entities.
@@ -122,8 +122,8 @@ func (imq *InstanceMetadataQuery) FirstX(ctx context.Context) *InstanceMetadata 
 
 // FirstID returns the first InstanceMetadata ID from the query.
 // Returns a *NotFoundError when no InstanceMetadata ID was found.
-func (imq *InstanceMetadataQuery) FirstID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (imq *InstanceMetadataQuery) FirstID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = imq.Limit(1).IDs(setContextOp(ctx, imq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -135,7 +135,7 @@ func (imq *InstanceMetadataQuery) FirstID(ctx context.Context) (id idx.PrefixedI
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (imq *InstanceMetadataQuery) FirstIDX(ctx context.Context) idx.PrefixedID {
+func (imq *InstanceMetadataQuery) FirstIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := imq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -173,8 +173,8 @@ func (imq *InstanceMetadataQuery) OnlyX(ctx context.Context) *InstanceMetadata {
 // OnlyID is like Only, but returns the only InstanceMetadata ID in the query.
 // Returns a *NotSingularError when more than one InstanceMetadata ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (imq *InstanceMetadataQuery) OnlyID(ctx context.Context) (id idx.PrefixedID, err error) {
-	var ids []idx.PrefixedID
+func (imq *InstanceMetadataQuery) OnlyID(ctx context.Context) (id gidx.PrefixedID, err error) {
+	var ids []gidx.PrefixedID
 	if ids, err = imq.Limit(2).IDs(setContextOp(ctx, imq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -190,7 +190,7 @@ func (imq *InstanceMetadataQuery) OnlyID(ctx context.Context) (id idx.PrefixedID
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (imq *InstanceMetadataQuery) OnlyIDX(ctx context.Context) idx.PrefixedID {
+func (imq *InstanceMetadataQuery) OnlyIDX(ctx context.Context) gidx.PrefixedID {
 	id, err := imq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -218,7 +218,7 @@ func (imq *InstanceMetadataQuery) AllX(ctx context.Context) []*InstanceMetadata 
 }
 
 // IDs executes the query and returns a list of InstanceMetadata IDs.
-func (imq *InstanceMetadataQuery) IDs(ctx context.Context) (ids []idx.PrefixedID, err error) {
+func (imq *InstanceMetadataQuery) IDs(ctx context.Context) (ids []gidx.PrefixedID, err error) {
 	if imq.ctx.Unique == nil && imq.path != nil {
 		imq.Unique(true)
 	}
@@ -230,7 +230,7 @@ func (imq *InstanceMetadataQuery) IDs(ctx context.Context) (ids []idx.PrefixedID
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (imq *InstanceMetadataQuery) IDsX(ctx context.Context) []idx.PrefixedID {
+func (imq *InstanceMetadataQuery) IDsX(ctx context.Context) []gidx.PrefixedID {
 	ids, err := imq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -426,8 +426,8 @@ func (imq *InstanceMetadataQuery) sqlAll(ctx context.Context, hooks ...queryHook
 }
 
 func (imq *InstanceMetadataQuery) loadInstance(ctx context.Context, query *InstanceQuery, nodes []*InstanceMetadata, init func(*InstanceMetadata), assign func(*InstanceMetadata, *Instance)) error {
-	ids := make([]idx.PrefixedID, 0, len(nodes))
-	nodeids := make(map[idx.PrefixedID][]*InstanceMetadata)
+	ids := make([]gidx.PrefixedID, 0, len(nodes))
+	nodeids := make(map[gidx.PrefixedID][]*InstanceMetadata)
 	for i := range nodes {
 		fk := nodes[i].InstanceID
 		if _, ok := nodeids[fk]; !ok {

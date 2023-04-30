@@ -26,7 +26,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // Noder wraps the basic Node method.
@@ -51,7 +51,7 @@ type NodeOption func(*nodeOptions)
 // WithNodeType sets the node Type resolver function (i.e. the table to query).
 // If was not provided, the table will be derived from the universal-id
 // configuration as described in: https://entgo.io/docs/migrate/#universal-ids.
-func WithNodeType(f func(context.Context, idx.PrefixedID) (string, error)) NodeOption {
+func WithNodeType(f func(context.Context, gidx.PrefixedID) (string, error)) NodeOption {
 	return func(o *nodeOptions) {
 		o.nodeType = f
 	}
@@ -59,13 +59,13 @@ func WithNodeType(f func(context.Context, idx.PrefixedID) (string, error)) NodeO
 
 // WithFixedNodeType sets the Type of the node to a fixed value.
 func WithFixedNodeType(t string) NodeOption {
-	return WithNodeType(func(context.Context, idx.PrefixedID) (string, error) {
+	return WithNodeType(func(context.Context, gidx.PrefixedID) (string, error) {
 		return t, nil
 	})
 }
 
 type nodeOptions struct {
-	nodeType func(context.Context, idx.PrefixedID) (string, error)
+	nodeType func(context.Context, gidx.PrefixedID) (string, error)
 }
 
 func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
@@ -74,7 +74,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 		opt(nopts)
 	}
 	if nopts.nodeType == nil {
-		nopts.nodeType = func(ctx context.Context, id idx.PrefixedID) (string, error) {
+		nopts.nodeType = func(ctx context.Context, id gidx.PrefixedID) (string, error) {
 			return "", fmt.Errorf("cannot resolve noder (%v) without its type", id)
 		}
 	}
@@ -86,7 +86,7 @@ func (c *Client) newNodeOpts(opts []NodeOption) *nodeOptions {
 //
 //	c.Noder(ctx, id)
 //	c.Noder(ctx, id, ent.WithNodeType(typeResolver))
-func (c *Client) Noder(ctx context.Context, id idx.PrefixedID, opts ...NodeOption) (_ Noder, err error) {
+func (c *Client) Noder(ctx context.Context, id gidx.PrefixedID, opts ...NodeOption) (_ Noder, err error) {
 	defer func() {
 		if IsNotFound(err) {
 			err = multierror.Append(err, entgql.ErrNodeNotFound(id))
@@ -99,10 +99,10 @@ func (c *Client) Noder(ctx context.Context, id idx.PrefixedID, opts ...NodeOptio
 	return c.noder(ctx, table, id)
 }
 
-func (c *Client) noder(ctx context.Context, table string, id idx.PrefixedID) (Noder, error) {
+func (c *Client) noder(ctx context.Context, table string, id gidx.PrefixedID) (Noder, error) {
 	switch table {
 	case instance.Table:
-		var uid idx.PrefixedID
+		var uid gidx.PrefixedID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -118,7 +118,7 @@ func (c *Client) noder(ctx context.Context, table string, id idx.PrefixedID) (No
 		}
 		return n, nil
 	case instancemetadata.Table:
-		var uid idx.PrefixedID
+		var uid gidx.PrefixedID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -134,7 +134,7 @@ func (c *Client) noder(ctx context.Context, table string, id idx.PrefixedID) (No
 		}
 		return n, nil
 	case instanceprovider.Table:
-		var uid idx.PrefixedID
+		var uid gidx.PrefixedID
 		if err := uid.UnmarshalGQL(id); err != nil {
 			return nil, err
 		}
@@ -154,7 +154,7 @@ func (c *Client) noder(ctx context.Context, table string, id idx.PrefixedID) (No
 	}
 }
 
-func (c *Client) Noders(ctx context.Context, ids []idx.PrefixedID, opts ...NodeOption) ([]Noder, error) {
+func (c *Client) Noders(ctx context.Context, ids []gidx.PrefixedID, opts ...NodeOption) ([]Noder, error) {
 	switch len(ids) {
 	case 1:
 		noder, err := c.Noder(ctx, ids[0], opts...)
@@ -168,8 +168,8 @@ func (c *Client) Noders(ctx context.Context, ids []idx.PrefixedID, opts ...NodeO
 
 	noders := make([]Noder, len(ids))
 	errors := make([]error, len(ids))
-	tables := make(map[string][]idx.PrefixedID)
-	id2idx := make(map[idx.PrefixedID][]int, len(ids))
+	tables := make(map[string][]gidx.PrefixedID)
+	id2idx := make(map[gidx.PrefixedID][]int, len(ids))
 	nopts := c.newNodeOpts(opts)
 	for i, id := range ids {
 		table, err := nopts.nodeType(ctx, id)
@@ -215,9 +215,9 @@ func (c *Client) Noders(ctx context.Context, ids []idx.PrefixedID, opts ...NodeO
 	return noders, nil
 }
 
-func (c *Client) noders(ctx context.Context, table string, ids []idx.PrefixedID) ([]Noder, error) {
+func (c *Client) noders(ctx context.Context, table string, ids []gidx.PrefixedID) ([]Noder, error) {
 	noders := make([]Noder, len(ids))
-	idmap := make(map[idx.PrefixedID][]*Noder, len(ids))
+	idmap := make(map[gidx.PrefixedID][]*Noder, len(ids))
 	for i, id := range ids {
 		idmap[id] = append(idmap[id], &noders[i])
 	}

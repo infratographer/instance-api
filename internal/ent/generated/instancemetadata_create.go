@@ -27,7 +27,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceMetadataCreate is the builder for creating a InstanceMetadata entity.
@@ -78,21 +78,21 @@ func (imc *InstanceMetadataCreate) SetNillableUpdatedAt(t *time.Time) *InstanceM
 }
 
 // SetInstanceID sets the "instance_id" field.
-func (imc *InstanceMetadataCreate) SetInstanceID(ii idx.PrefixedID) *InstanceMetadataCreate {
-	imc.mutation.SetInstanceID(ii)
+func (imc *InstanceMetadataCreate) SetInstanceID(gi gidx.PrefixedID) *InstanceMetadataCreate {
+	imc.mutation.SetInstanceID(gi)
 	return imc
 }
 
 // SetID sets the "id" field.
-func (imc *InstanceMetadataCreate) SetID(ii idx.PrefixedID) *InstanceMetadataCreate {
-	imc.mutation.SetID(ii)
+func (imc *InstanceMetadataCreate) SetID(gi gidx.PrefixedID) *InstanceMetadataCreate {
+	imc.mutation.SetID(gi)
 	return imc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (imc *InstanceMetadataCreate) SetNillableID(ii *idx.PrefixedID) *InstanceMetadataCreate {
-	if ii != nil {
-		imc.SetID(*ii)
+func (imc *InstanceMetadataCreate) SetNillableID(gi *gidx.PrefixedID) *InstanceMetadataCreate {
+	if gi != nil {
+		imc.SetID(*gi)
 	}
 	return imc
 }
@@ -191,7 +191,7 @@ func (imc *InstanceMetadataCreate) sqlSave(ctx context.Context) (*InstanceMetada
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*idx.PrefixedID); ok {
+		if id, ok := _spec.ID.Value.(*gidx.PrefixedID); ok {
 			_node.ID = *id
 		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
 			return nil, err

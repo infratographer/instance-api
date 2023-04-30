@@ -20,21 +20,14 @@ import (
 	"context"
 	"fmt"
 
-	"go.infratographer.com/instance-api/internal/ent/generated/instance"
-	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
-	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // prefixMap maps prefixes to table names.
-var prefixMap = map[string]string{
-	"instanc": instance.Table,
-	"instinm": instancemetadata.Table,
-	"instpvd": instanceprovider.Table,
-}
+var prefixMap = map[string]string{}
 
 // NodeTypeFromPrefixedID maps a PrefixedID to the underlying data table.
-func NodeTypeFromPrefixedID(ctx context.Context, id idx.PrefixedID) (string, error) {
+func NodeTypeFromPrefixedID(ctx context.Context, id gidx.PrefixedID) (string, error) {
 	p := id.Prefix()
 	if p == "" {
 		return "", fmt.Errorf("prefix is missing")

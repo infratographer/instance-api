@@ -21,7 +21,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 const (
@@ -29,16 +29,16 @@ const (
 	Label = "instance"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldLocationID holds the string denoting the location_id field in the database.
-	FieldLocationID = "location_id"
-	// FieldTenantID holds the string denoting the tenant_id field in the database.
-	FieldTenantID = "tenant_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldTenantID holds the string denoting the tenant_id field in the database.
+	FieldTenantID = "tenant_id"
+	// FieldLocationID holds the string denoting the location_id field in the database.
+	FieldLocationID = "location_id"
 	// FieldInstanceProviderID holds the string denoting the instance_provider_id field in the database.
 	FieldInstanceProviderID = "instance_provider_id"
 	// EdgeInstanceProvider holds the string denoting the instance_provider edge name in mutations.
@@ -66,11 +66,11 @@ const (
 // Columns holds all SQL columns for instance fields.
 var Columns = []string{
 	FieldID,
-	FieldLocationID,
-	FieldTenantID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldName,
+	FieldTenantID,
+	FieldLocationID,
 	FieldInstanceProviderID,
 }
 
@@ -85,10 +85,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// LocationIDValidator is a validator for the "location_id" field. It is called by the builders before save.
-	LocationIDValidator func(string) error
-	// TenantIDValidator is a validator for the "tenant_id" field. It is called by the builders before save.
-	TenantIDValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
@@ -98,7 +94,7 @@ var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() idx.PrefixedID
+	DefaultID func() gidx.PrefixedID
 )
 
 // OrderOption defines the ordering options for the Instance queries.
@@ -107,16 +103,6 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
-}
-
-// ByLocationID orders the results by the location_id field.
-func ByLocationID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLocationID, opts...).ToFunc()
-}
-
-// ByTenantID orders the results by the tenant_id field.
-func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -132,6 +118,16 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByTenantID orders the results by the tenant_id field.
+func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
+}
+
+// ByLocationID orders the results by the location_id field.
+func ByLocationID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocationID, opts...).ToFunc()
 }
 
 // ByInstanceProviderID orders the results by the instance_provider_id field.

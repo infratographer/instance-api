@@ -23,7 +23,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
 	"go.infratographer.com/instance-api/internal/ent/schema"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -33,79 +33,35 @@ func init() {
 	instanceMixin := schema.Instance{}.Mixin()
 	instanceMixinFields0 := instanceMixin[0].Fields()
 	_ = instanceMixinFields0
-	instanceMixinFields1 := instanceMixin[1].Fields()
-	_ = instanceMixinFields1
-	instanceMixinFields2 := instanceMixin[2].Fields()
-	_ = instanceMixinFields2
-	instanceMixinFields3 := instanceMixin[3].Fields()
-	_ = instanceMixinFields3
 	instanceFields := schema.Instance{}.Fields()
 	_ = instanceFields
-	// instanceDescLocationID is the schema descriptor for location_id field.
-	instanceDescLocationID := instanceMixinFields1[0].Descriptor()
-	// instance.LocationIDValidator is a validator for the "location_id" field. It is called by the builders before save.
-	instance.LocationIDValidator = func() func(string) error {
-		validators := instanceDescLocationID.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(location_id string) error {
-			for _, fn := range fns {
-				if err := fn(location_id); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// instanceDescTenantID is the schema descriptor for tenant_id field.
-	instanceDescTenantID := instanceMixinFields2[0].Descriptor()
-	// instance.TenantIDValidator is a validator for the "tenant_id" field. It is called by the builders before save.
-	instance.TenantIDValidator = func() func(string) error {
-		validators := instanceDescTenantID.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(tenant_id string) error {
-			for _, fn := range fns {
-				if err := fn(tenant_id); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// instanceDescCreatedAt is the schema descriptor for created_at field.
-	instanceDescCreatedAt := instanceMixinFields3[0].Descriptor()
+	instanceDescCreatedAt := instanceMixinFields0[0].Descriptor()
 	// instance.DefaultCreatedAt holds the default value on creation for the created_at field.
 	instance.DefaultCreatedAt = instanceDescCreatedAt.Default.(func() time.Time)
 	// instanceDescUpdatedAt is the schema descriptor for updated_at field.
-	instanceDescUpdatedAt := instanceMixinFields3[1].Descriptor()
+	instanceDescUpdatedAt := instanceMixinFields0[1].Descriptor()
 	// instance.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	instance.DefaultUpdatedAt = instanceDescUpdatedAt.Default.(func() time.Time)
 	// instance.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	instance.UpdateDefaultUpdatedAt = instanceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// instanceDescName is the schema descriptor for name field.
-	instanceDescName := instanceFields[0].Descriptor()
+	instanceDescName := instanceFields[1].Descriptor()
 	// instance.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	instance.NameValidator = instanceDescName.Validators[0].(func(string) error)
 	// instanceDescID is the schema descriptor for id field.
-	instanceDescID := instanceMixinFields0[0].Descriptor()
+	instanceDescID := instanceFields[0].Descriptor()
 	// instance.DefaultID holds the default value on creation for the id field.
-	instance.DefaultID = instanceDescID.Default.(func() idx.PrefixedID)
+	instance.DefaultID = instanceDescID.Default.(func() gidx.PrefixedID)
 	instancemetadataMixin := schema.InstanceMetadata{}.Mixin()
 	instancemetadataMixinFields0 := instancemetadataMixin[0].Fields()
 	_ = instancemetadataMixinFields0
 	instancemetadataMixinFields1 := instancemetadataMixin[1].Fields()
 	_ = instancemetadataMixinFields1
-	instancemetadataMixinFields2 := instancemetadataMixin[2].Fields()
-	_ = instancemetadataMixinFields2
 	instancemetadataFields := schema.InstanceMetadata{}.Fields()
 	_ = instancemetadataFields
 	// instancemetadataDescNamespace is the schema descriptor for namespace field.
-	instancemetadataDescNamespace := instancemetadataMixinFields1[0].Descriptor()
+	instancemetadataDescNamespace := instancemetadataMixinFields0[0].Descriptor()
 	// instancemetadata.NamespaceValidator is a validator for the "namespace" field. It is called by the builders before save.
 	instancemetadata.NamespaceValidator = func() func(string) error {
 		validators := instancemetadataDescNamespace.Validators
@@ -124,40 +80,40 @@ func init() {
 		}
 	}()
 	// instancemetadataDescCreatedAt is the schema descriptor for created_at field.
-	instancemetadataDescCreatedAt := instancemetadataMixinFields2[0].Descriptor()
+	instancemetadataDescCreatedAt := instancemetadataMixinFields1[0].Descriptor()
 	// instancemetadata.DefaultCreatedAt holds the default value on creation for the created_at field.
 	instancemetadata.DefaultCreatedAt = instancemetadataDescCreatedAt.Default.(func() time.Time)
 	// instancemetadataDescUpdatedAt is the schema descriptor for updated_at field.
-	instancemetadataDescUpdatedAt := instancemetadataMixinFields2[1].Descriptor()
+	instancemetadataDescUpdatedAt := instancemetadataMixinFields1[1].Descriptor()
 	// instancemetadata.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	instancemetadata.DefaultUpdatedAt = instancemetadataDescUpdatedAt.Default.(func() time.Time)
 	// instancemetadata.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	instancemetadata.UpdateDefaultUpdatedAt = instancemetadataDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// instancemetadataDescID is the schema descriptor for id field.
-	instancemetadataDescID := instancemetadataMixinFields0[0].Descriptor()
+	instancemetadataDescID := instancemetadataFields[0].Descriptor()
 	// instancemetadata.DefaultID holds the default value on creation for the id field.
-	instancemetadata.DefaultID = instancemetadataDescID.Default.(func() idx.PrefixedID)
+	instancemetadata.DefaultID = instancemetadataDescID.Default.(func() gidx.PrefixedID)
 	instanceproviderMixin := schema.InstanceProvider{}.Mixin()
 	instanceproviderMixinFields0 := instanceproviderMixin[0].Fields()
 	_ = instanceproviderMixinFields0
 	instanceproviderFields := schema.InstanceProvider{}.Fields()
 	_ = instanceproviderFields
-	// instanceproviderDescName is the schema descriptor for name field.
-	instanceproviderDescName := instanceproviderFields[0].Descriptor()
-	// instanceprovider.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	instanceprovider.NameValidator = instanceproviderDescName.Validators[0].(func(string) error)
 	// instanceproviderDescCreatedAt is the schema descriptor for created_at field.
-	instanceproviderDescCreatedAt := instanceproviderFields[1].Descriptor()
+	instanceproviderDescCreatedAt := instanceproviderMixinFields0[0].Descriptor()
 	// instanceprovider.DefaultCreatedAt holds the default value on creation for the created_at field.
 	instanceprovider.DefaultCreatedAt = instanceproviderDescCreatedAt.Default.(func() time.Time)
 	// instanceproviderDescUpdatedAt is the schema descriptor for updated_at field.
-	instanceproviderDescUpdatedAt := instanceproviderFields[2].Descriptor()
+	instanceproviderDescUpdatedAt := instanceproviderMixinFields0[1].Descriptor()
 	// instanceprovider.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	instanceprovider.DefaultUpdatedAt = instanceproviderDescUpdatedAt.Default.(func() time.Time)
 	// instanceprovider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	instanceprovider.UpdateDefaultUpdatedAt = instanceproviderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// instanceproviderDescName is the schema descriptor for name field.
+	instanceproviderDescName := instanceproviderFields[1].Descriptor()
+	// instanceprovider.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	instanceprovider.NameValidator = instanceproviderDescName.Validators[0].(func(string) error)
 	// instanceproviderDescID is the schema descriptor for id field.
-	instanceproviderDescID := instanceproviderMixinFields0[0].Descriptor()
+	instanceproviderDescID := instanceproviderFields[0].Descriptor()
 	// instanceprovider.DefaultID holds the default value on creation for the id field.
-	instanceprovider.DefaultID = instanceproviderDescID.Default.(func() idx.PrefixedID)
+	instanceprovider.DefaultID = instanceproviderDescID.Default.(func() gidx.PrefixedID)
 }

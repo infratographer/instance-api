@@ -56,7 +56,7 @@ autobind:
 models:
   ID:
     model:
-      - go.infratographer.com/x/idx.PrefixedID
+      - go.infratographer.com/x/gidx.PrefixedID
       # - github.com/99designs/gqlgen/graphql.ID
   Int:
     model:
@@ -65,7 +65,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   JSON:
     model:
-      - go.infratographer.com/instance-api/xthings/gqltypes.RawMessage
+      - go.infratographer.com/x/entx.RawMessage
   Node:
     model:
       - go.infratographer.com/instance-api/internal/ent/generated.Noder

@@ -24,20 +24,22 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"go.infratographer.com/instance-api/internal/ent/generated/instanceprovider"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceProvider is the model entity for the InstanceProvider schema.
 type InstanceProvider struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID idx.PrefixedID `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	ID gidx.PrefixedID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// TenantID holds the value of the "tenant_id" field.
+	TenantID gidx.PrefixedID `json:"tenant_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the InstanceProviderQuery when eager-loading is set.
 	Edges        InstanceProviderEdges `json:"edges"`
@@ -71,8 +73,8 @@ func (*InstanceProvider) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case instanceprovider.FieldID:
-			values[i] = new(idx.PrefixedID)
+		case instanceprovider.FieldID, instanceprovider.FieldTenantID:
+			values[i] = new(gidx.PrefixedID)
 		case instanceprovider.FieldName:
 			values[i] = new(sql.NullString)
 		case instanceprovider.FieldCreatedAt, instanceprovider.FieldUpdatedAt:
@@ -93,16 +95,10 @@ func (ip *InstanceProvider) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case instanceprovider.FieldID:
-			if value, ok := values[i].(*idx.PrefixedID); !ok {
+			if value, ok := values[i].(*gidx.PrefixedID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				ip.ID = *value
-			}
-		case instanceprovider.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				ip.Name = value.String
 			}
 		case instanceprovider.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -115,6 +111,18 @@ func (ip *InstanceProvider) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				ip.UpdatedAt = value.Time
+			}
+		case instanceprovider.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				ip.Name = value.String
+			}
+		case instanceprovider.FieldTenantID:
+			if value, ok := values[i].(*gidx.PrefixedID); !ok {
+				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
+			} else if value != nil {
+				ip.TenantID = *value
 			}
 		default:
 			ip.selectValues.Set(columns[i], values[i])
@@ -157,14 +165,17 @@ func (ip *InstanceProvider) String() string {
 	var builder strings.Builder
 	builder.WriteString("InstanceProvider(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", ip.ID))
-	builder.WriteString("name=")
-	builder.WriteString(ip.Name)
-	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(ip.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(ip.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(ip.Name)
+	builder.WriteString(", ")
+	builder.WriteString("tenant_id=")
+	builder.WriteString(fmt.Sprintf("%v", ip.TenantID))
 	builder.WriteByte(')')
 	return builder.String()
 }

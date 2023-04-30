@@ -27,7 +27,7 @@ import (
 	"go.infratographer.com/instance-api/internal/ent/generated/instance"
 	"go.infratographer.com/instance-api/internal/ent/generated/instancemetadata"
 	"go.infratographer.com/instance-api/internal/ent/generated/predicate"
-	"go.infratographer.com/x/idx"
+	"go.infratographer.com/x/gidx"
 )
 
 // InstanceUpdate is the builder for updating Instance entities.
@@ -50,14 +50,14 @@ func (iu *InstanceUpdate) SetName(s string) *InstanceUpdate {
 }
 
 // AddMetadatumIDs adds the "metadata" edge to the InstanceMetadata entity by IDs.
-func (iu *InstanceUpdate) AddMetadatumIDs(ids ...idx.PrefixedID) *InstanceUpdate {
+func (iu *InstanceUpdate) AddMetadatumIDs(ids ...gidx.PrefixedID) *InstanceUpdate {
 	iu.mutation.AddMetadatumIDs(ids...)
 	return iu
 }
 
 // AddMetadata adds the "metadata" edges to the InstanceMetadata entity.
 func (iu *InstanceUpdate) AddMetadata(i ...*InstanceMetadata) *InstanceUpdate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -76,14 +76,14 @@ func (iu *InstanceUpdate) ClearMetadata() *InstanceUpdate {
 }
 
 // RemoveMetadatumIDs removes the "metadata" edge to InstanceMetadata entities by IDs.
-func (iu *InstanceUpdate) RemoveMetadatumIDs(ids ...idx.PrefixedID) *InstanceUpdate {
+func (iu *InstanceUpdate) RemoveMetadatumIDs(ids ...gidx.PrefixedID) *InstanceUpdate {
 	iu.mutation.RemoveMetadatumIDs(ids...)
 	return iu
 }
 
 // RemoveMetadata removes "metadata" edges to InstanceMetadata entities.
 func (iu *InstanceUpdate) RemoveMetadata(i ...*InstanceMetadata) *InstanceUpdate {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -150,12 +150,6 @@ func (iu *InstanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if iu.mutation.LocationIDCleared() {
-		_spec.ClearField(instance.FieldLocationID, field.TypeString)
-	}
-	if iu.mutation.TenantIDCleared() {
-		_spec.ClearField(instance.FieldTenantID, field.TypeString)
 	}
 	if value, ok := iu.mutation.UpdatedAt(); ok {
 		_spec.SetField(instance.FieldUpdatedAt, field.TypeTime, value)
@@ -235,14 +229,14 @@ func (iuo *InstanceUpdateOne) SetName(s string) *InstanceUpdateOne {
 }
 
 // AddMetadatumIDs adds the "metadata" edge to the InstanceMetadata entity by IDs.
-func (iuo *InstanceUpdateOne) AddMetadatumIDs(ids ...idx.PrefixedID) *InstanceUpdateOne {
+func (iuo *InstanceUpdateOne) AddMetadatumIDs(ids ...gidx.PrefixedID) *InstanceUpdateOne {
 	iuo.mutation.AddMetadatumIDs(ids...)
 	return iuo
 }
 
 // AddMetadata adds the "metadata" edges to the InstanceMetadata entity.
 func (iuo *InstanceUpdateOne) AddMetadata(i ...*InstanceMetadata) *InstanceUpdateOne {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -261,14 +255,14 @@ func (iuo *InstanceUpdateOne) ClearMetadata() *InstanceUpdateOne {
 }
 
 // RemoveMetadatumIDs removes the "metadata" edge to InstanceMetadata entities by IDs.
-func (iuo *InstanceUpdateOne) RemoveMetadatumIDs(ids ...idx.PrefixedID) *InstanceUpdateOne {
+func (iuo *InstanceUpdateOne) RemoveMetadatumIDs(ids ...gidx.PrefixedID) *InstanceUpdateOne {
 	iuo.mutation.RemoveMetadatumIDs(ids...)
 	return iuo
 }
 
 // RemoveMetadata removes "metadata" edges to InstanceMetadata entities.
 func (iuo *InstanceUpdateOne) RemoveMetadata(i ...*InstanceMetadata) *InstanceUpdateOne {
-	ids := make([]idx.PrefixedID, len(i))
+	ids := make([]gidx.PrefixedID, len(i))
 	for j := range i {
 		ids[j] = i[j].ID
 	}
@@ -365,12 +359,6 @@ func (iuo *InstanceUpdateOne) sqlSave(ctx context.Context) (_node *Instance, err
 				ps[i](selector)
 			}
 		}
-	}
-	if iuo.mutation.LocationIDCleared() {
-		_spec.ClearField(instance.FieldLocationID, field.TypeString)
-	}
-	if iuo.mutation.TenantIDCleared() {
-		_spec.ClearField(instance.FieldTenantID, field.TypeString)
 	}
 	if value, ok := iuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(instance.FieldUpdatedAt, field.TypeTime, value)
