@@ -1,0 +1,11 @@
+wipe = true
+pkgname = "models"
+output = "internal/models"
+
+[crdb]
+dbname = "instance_api_dev"
+host = "crdb"
+port = 26257
+user = "root"
+sslmode = "disable"
+blacklist = ["goose_db_version"]
