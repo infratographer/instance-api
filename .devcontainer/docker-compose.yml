@@ -1,0 +1,62 @@
+version: '3.9'
+
+networks:
+  infradev:
+
+volumes:
+  crdb:
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+        # Ensure that the variables in .env match the same variables in devcontainer.json
+        - .env
+
+    volumes:
+      - ..:/workspaces:cached
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+
+    networks:
+      - infradev
+
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  # Environment setup
+  create_databases:
+    image: cockroachdb/cockroach:latest-v22.2
+    restart: on-failure:5
+    command: "sql --insecure -e 'CREATE DATABASE IF NOT EXISTS instance_api_dev;'"
+    env_file:
+      - .env
+    depends_on:
+      - crdb
+    networks:
+      - infradev
+
+  # Required services (databases, etc)
+  crdb:
+    image: cockroachdb/cockroach:latest-v22.2
+    command: start-single-node --insecure
+    restart: unless-stopped
+    volumes:
+      - crdb:/cockroach/cockroach-data
+    env_file:
+      - .env
+    healthcheck:
+      test: "curl --fail http://localhost:8080/health?ready=1 || exit 1"
+      interval: "2s"
+      retries: 3
+      start_period: "15s"
+      timeout: "5s"
+    networks:
+      - infradev
+
+
+    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
